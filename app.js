@@ -90,6 +90,13 @@ const complianceItems = [
 const state = {
   activities: [],
   statuses: Object.fromEntries(complianceItems.map((item) => [item.id, false])),
+  oplanKatok: {
+    masterRecords: 357,
+    individuals: 237,
+    smallArms: 326,
+    lightWeapons: 17,
+    syncedAt: null,
+  },
   todayKey: localDateKey(new Date()),
   tomorrowKey: localDateKey(addDays(new Date(), 1)),
   month: startOfMonth(new Date()),
@@ -225,6 +232,50 @@ async function loadActivities() {
   renderCalendar();
   renderUpcoming();
   renderNotices();
+}
+
+function renderOplanKatokSummary() {
+  const summary = state.oplanKatok;
+  document.querySelector("#katok-master-records").textContent = summary.masterRecords.toLocaleString("en-PH");
+  document.querySelector("#katok-individuals").textContent = summary.individuals.toLocaleString("en-PH");
+  document.querySelector("#katok-small-arms").textContent = summary.smallArms.toLocaleString("en-PH");
+  document.querySelector("#katok-light-weapons").textContent = summary.lightWeapons.toLocaleString("en-PH");
+
+  const status = document.querySelector("#katok-sync-status");
+  if (summary.syncedAt) {
+    const synced = new Intl.DateTimeFormat("en-PH", {
+      timeZone: "Asia/Manila",
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    }).format(new Date(summary.syncedAt));
+    status.textContent = `Automatically synced from the private Google Sheet. Last sync: ${synced} (Philippine time). Aggregate totals only.`;
+  }
+}
+
+async function loadOplanKatokSummary() {
+  const status = document.querySelector("#katok-sync-status");
+  try {
+    const response = await fetch(`oplan-katok-summary.json?cache=${Date.now()}`, { cache: "no-store" });
+    if (!response.ok) throw new Error("Unable to load the latest totals.");
+    const data = await response.json();
+    const fields = ["masterRecords", "individuals", "smallArms", "lightWeapons"];
+    if (!fields.every((field) => Number.isFinite(Number(data[field])))) {
+      throw new Error("The totals file is not valid.");
+    }
+    state.oplanKatok = {
+      masterRecords: Number(data.masterRecords),
+      individuals: Number(data.individuals),
+      smallArms: Number(data.smallArms),
+      lightWeapons: Number(data.lightWeapons),
+      syncedAt: data.syncedAt || null,
+    };
+    renderOplanKatokSummary();
+  } catch (error) {
+    status.textContent = `${error.message} Showing the last verified aggregate totals.`;
+  }
 }
 
 function renderCalendar() {
@@ -363,4 +414,6 @@ document.querySelector("input[name='activityDate']").min = localDateKey(new Date
 
 renderCompliance();
 renderCalendar();
-Promise.all([loadStatuses(), loadActivities()]);
+renderOplanKatokSummary();
+Promise.all([loadStatuses(), loadActivities(), loadOplanKatokSummary()]);
+window.setInterval(loadOplanKatokSummary, 5 * 60 * 1000);
