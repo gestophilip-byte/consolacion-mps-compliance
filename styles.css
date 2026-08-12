@@ -163,6 +163,19 @@ h3 { margin: 0; color: var(--navy); font-size: 1.15rem; }
 .upcoming-item strong { display: block; font-size: .88rem; }
 .upcoming-item time, .upcoming-item span { display: block; color: var(--muted); font-size: .72rem; }
 .upcoming-item time { margin-top: 3px; color: var(--blue); font-weight: 800; }
+.delete-activity {
+  margin-top: 12px;
+  padding: 7px 10px;
+  color: var(--red);
+  border: 1px solid rgba(206, 17, 38, .28);
+  border-radius: 7px;
+  background: var(--red-light);
+  font-size: .68rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.delete-activity:hover { color: white; background: var(--red); }
+.delete-activity:disabled { cursor: wait; opacity: .65; }
 .activity-form { margin-top: 24px; padding: 28px; }
 .form-heading { display: flex; justify-content: space-between; gap: 24px; align-items: end; margin-bottom: 24px; }
 .form-heading p { margin: 0; color: var(--muted); font-size: .86rem; }
