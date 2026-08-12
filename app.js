@@ -270,22 +270,59 @@ function activityMarkup(activity, className) {
       <time>${formatDate(activity.activityDate)} • ${escapeHtml(time)}</time>
       ${activity.location ? `<span>${escapeHtml(activity.location)}</span>` : ""}
       ${activity.details ? `<span>${escapeHtml(activity.details)}</span>` : ""}
+      <button
+        class="delete-activity"
+        type="button"
+        data-activity-id="${escapeHtml(activity.id)}"
+        data-activity-title="${escapeHtml(activity.title)}"
+      >Delete activity</button>
     </article>`;
+}
+
+function bindDeleteButtons(container) {
+  container.querySelectorAll(".delete-activity").forEach((button) => {
+    button.addEventListener("click", deleteActivity);
+  });
+}
+
+async function deleteActivity(event) {
+  const button = event.currentTarget;
+  const id = button.dataset.activityId;
+  const title = button.dataset.activityTitle || "this activity";
+  if (!id || !window.confirm(`Delete “${title}” from the public calendar? This cannot be undone.`)) return;
+
+  button.disabled = true;
+  button.textContent = "Deleting…";
+  try {
+    await request("/api/activities", {
+      method: "DELETE",
+      body: JSON.stringify({ id }),
+    });
+    await loadActivities();
+  } catch (error) {
+    button.disabled = false;
+    button.textContent = "Delete activity";
+    window.alert(error.message);
+  }
 }
 
 function renderUpcoming() {
   const activities = sortedActivities().filter((activity) => activity.activityDate >= state.todayKey).slice(0, 12);
   document.querySelector("#activity-count").textContent = String(activities.length);
-  document.querySelector("#upcoming-list").innerHTML = activities.length
+  const list = document.querySelector("#upcoming-list");
+  list.innerHTML = activities.length
     ? activities.map((activity) => activityMarkup(activity, "upcoming-item")).join("")
     : '<p class="empty-state">No upcoming activities yet. Add the first one below.</p>';
+  bindDeleteButtons(list);
 }
 
 function renderNotices() {
   const notices = sortedActivities().filter((activity) => activity.activityDate === state.tomorrowKey);
-  document.querySelector("#notice-list").innerHTML = notices.length
+  const list = document.querySelector("#notice-list");
+  list.innerHTML = notices.length
     ? notices.map((activity) => activityMarkup(activity, "notice-item")).join("")
     : '<p class="empty-state">No activity is scheduled for tomorrow.</p>';
+  bindDeleteButtons(list);
 }
 
 async function submitActivity(event) {
