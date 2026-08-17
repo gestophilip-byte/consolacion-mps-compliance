@@ -9,13 +9,8 @@
     const defaultCitationCampaign = () => ({
       id: CITATION_CAMPAIGN_ID,
       title: "Citation Monitoring",
-      period: "Overall citation monitoring total",
-      asOfDate: new Intl.DateTimeFormat("en-PH", {
-        timeZone: "Asia/Manila",
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      }).format(new Date()),
+      period: "All populated Citation Monitoring tabs through 17 August 2026",
+      asOfDate: "17 August 2026",
       summaryOnly: true,
       sourceHref: CITATION_SHEET_URL,
       chartMetrics: [
@@ -23,13 +18,13 @@
           id: "total-citations",
           label: "Total Citations",
           year2025: null,
-          year2026: null,
+          year2026: 4197,
         },
         {
           id: "overall-amount",
           label: "Overall Estimated Fines",
           year2025: null,
-          year2026: null,
+          year2026: 2114300,
           kind: "currency",
         },
       ],
@@ -54,10 +49,14 @@
       campaign.sourceHref = CITATION_SHEET_URL;
 
       const existingMetrics = Array.isArray(campaign.chartMetrics) ? campaign.chartMetrics : [];
-      campaign.chartMetrics = defaults.chartMetrics.map((defaultMetric) => ({
-        ...defaultMetric,
-        ...(existingMetrics.find((metric) => metric.id === defaultMetric.id) || {}),
-      }));
+      campaign.chartMetrics = defaults.chartMetrics.map((defaultMetric) => {
+        const existingMetric = existingMetrics.find((metric) => metric.id === defaultMetric.id) || {};
+        const merged = { ...defaultMetric, ...existingMetric };
+        if (merged.year2026 === null || merged.year2026 === undefined || merged.year2026 === "") {
+          merged.year2026 = defaultMetric.year2026;
+        }
+        return merged;
+      });
 
       return campaign;
     }
@@ -199,7 +198,7 @@
             </div>
           </div>
           <div class="citation-summary-footer">
-            <p>Overall figures are maintained under Accomplishments. Use Edit figures to update the citation count and total estimated amount for all visitors.</p>
+            <p>Totals were calculated from the populated Citation Monitoring workbook tabs. Use Edit figures only if you need to override the current overall totals.</p>
             <a class="button primary" href="${CITATION_SHEET_URL}" target="_blank" rel="noopener noreferrer">Open Citation Monitoring Sheet ↗</a>
           </div>
         </article>`;
@@ -237,10 +236,9 @@
             <input aria-label="Overall estimated fines in Philippine pesos" type="number" min="0" step="0.01" value="${amountMetric?.year2026 ?? ""}" data-campaign="${CITATION_CAMPAIGN_ID}" data-collection="chartMetrics" data-metric="overall-amount" data-year="year2026" />
           </label>
         </div>
-        <p class="citation-editor-note">Enter the overall totals from the Citation Monitoring sheet. These figures will be saved together with the other accomplishment reports.</p>`;
+        <p class="citation-editor-note">Current workbook totals: 4,197 citations and ₱2,114,300.00 estimated fines. Saving here overrides the displayed totals for all visitors.</p>`;
     };
 
-    // Re-render once so Citation Monitoring appears immediately after the core app loads.
     renderAccomplishments();
   };
 
