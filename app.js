@@ -91,6 +91,8 @@ const defaultAccomplishments = {
   updatedAt: null,
   focusCrime: {
     title: "8 Focus Crime",
+    coveredPeriod: "1 January – 17 August 2026",
+    asOfDate: "17 August 2026",
     metrics: [
       { id: "murder", label: "Murder", value: 1, color: "#249326" },
       { id: "homicide", label: "Homicide", value: 1, color: "#2e2aff" },
@@ -102,11 +104,18 @@ const defaultAccomplishments = {
       { id: "carnapping-mc", label: "Carnapping MC", value: 0, color: "#5e696c" },
     ],
   },
+  workspaceReports: {
+    googleLinks: { coveredPeriod: "Current daily and weekly reporting cycle", asOfDate: "17 August 2026" },
+    aars: { coveredPeriod: "Current operational reporting period", asOfDate: "17 August 2026" },
+    oplanKatok: { coveredPeriod: "Master list through 17 August 2026", asOfDate: "17 August 2026" },
+    googleMap: { coveredPeriod: "Current compliance monitoring coverage", asOfDate: "17 August 2026" },
+  },
   campaigns: [
     {
       id: "illegal-drugs",
       title: "Campaign Against Illegal Drugs",
       period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      asOfDate: "31 July 2026",
       chartMetrics: [
         { id: "operations", label: "Operations", year2025: 51, year2026: 48 },
         { id: "persons-arrested", label: "Persons arrested", year2025: 110, year2026: 67 },
@@ -126,6 +135,7 @@ const defaultAccomplishments = {
       id: "wanted-persons",
       title: "Campaign Against Wanted Persons",
       period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      asOfDate: "31 July 2026",
       chartMetrics: [
         { id: "warrants-served", label: "Warrants served", year2025: 38, year2026: 44 },
         { id: "operations", label: "Operations", year2025: 38, year2026: 44 },
@@ -138,6 +148,7 @@ const defaultAccomplishments = {
       id: "illegal-gambling",
       title: "Campaign Against Illegal Gambling",
       period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      asOfDate: "31 July 2026",
       chartMetrics: [
         { id: "operations-conducted", label: "Operations conducted", year2025: 38, year2026: 19 },
         { id: "persons-arrested", label: "Persons arrested", year2025: 43, year2026: 35 },
@@ -151,6 +162,7 @@ const defaultAccomplishments = {
       id: "loose-firearms",
       title: "Campaign Against Loose Firearms",
       period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      asOfDate: "31 July 2026",
       chartMetrics: [
         { id: "total-operations", label: "Total operations", year2025: 8, year2026: 5 },
         { id: "arrested-suspects", label: "Arrested suspects", year2025: 8, year2026: 5 },
@@ -231,7 +243,10 @@ function campaignMarkup(campaign) {
         <div><p class="kicker">Operational accomplishment</p><h3>${escapeHtml(campaign.title)}</h3></div>
         <span class="comparison-chip">2025 vs 2026</span>
       </div>
-      <p class="campaign-period">${escapeHtml(campaign.period)}</p>
+      <div class="inline-report-dates">
+        <span><small>Covered period</small><strong>${escapeHtml(campaign.period)}</strong></span>
+        <span><small>As of date</small><strong>${escapeHtml(campaign.asOfDate)}</strong></span>
+      </div>
       <div class="campaign-chart" style="--metric-count:${campaign.chartMetrics.length}" role="img" aria-label="${escapeHtml(campaign.title)}, 2025 and 2026 comparison">
         ${campaign.chartMetrics.map((metric) => `
           <div class="campaign-chart-group">
@@ -291,6 +306,7 @@ function renderAccomplishmentsEditor() {
     <fieldset>
       <legend>${escapeHtml(campaign.title)}</legend>
       <label class="period-field"><span>Comparison period</span><input maxlength="160" value="${escapeHtml(campaign.period)}" data-campaign="${campaign.id}" data-period="true" /></label>
+      <label class="period-field"><span>As of date</span><input maxlength="80" value="${escapeHtml(campaign.asOfDate)}" data-campaign="${campaign.id}" data-as-of="true" /></label>
       <div class="editor-metric-header"><span>Indicator</span><span>2025</span><span>2026</span></div>
       ${campaign.chartMetrics.map((metric) => editorMetricMarkup(campaign, metric, "chartMetrics")).join("")}
       ${(campaign.tableMetrics || []).map((metric) => editorMetricMarkup(campaign, metric, "tableMetrics")).join("")}
@@ -304,6 +320,10 @@ function readAccomplishmentsEditor() {
     if (!campaign) return;
     if (input.dataset.period) {
       campaign.period = input.value.trim();
+      return;
+    }
+    if (input.dataset.asOf) {
+      campaign.asOfDate = input.value.trim();
       return;
     }
     const collection = input.dataset.collection;
@@ -320,7 +340,8 @@ async function loadAccomplishments() {
     if (data.accomplishments) state.accomplishments = {
       ...defaultAccomplishments,
       ...data.accomplishments,
-      focusCrime: data.accomplishments.focusCrime || defaultAccomplishments.focusCrime,
+      focusCrime: { ...defaultAccomplishments.focusCrime, ...(data.accomplishments.focusCrime || {}) },
+      workspaceReports: { ...defaultAccomplishments.workspaceReports, ...(data.accomplishments.workspaceReports || {}) },
     };
     message.textContent = "";
     message.className = "accomplishments-message";
@@ -330,6 +351,7 @@ async function loadAccomplishments() {
   }
   renderAccomplishments();
   renderFocusCrime();
+  renderReportDateHosts();
 }
 
 function toggleAccomplishmentsEditor() {
@@ -373,6 +395,9 @@ async function saveAccomplishments(event) {
 function renderFocusCrime() {
   const focusCrime = state.accomplishments.focusCrime || defaultAccomplishments.focusCrime;
   const maximum = Math.max(1, ...focusCrime.metrics.map((metric) => metric.value));
+  document.querySelector("#focus-crime-dates").innerHTML = `
+    <span><small>Covered period</small><strong>${escapeHtml(focusCrime.coveredPeriod)}</strong></span>
+    <span><small>As of date</small><strong>${escapeHtml(focusCrime.asOfDate)}</strong></span>`;
   const chart = document.querySelector("#focus-crime-chart");
   chart.style.setProperty("--crime-count", focusCrime.metrics.length);
   chart.innerHTML = focusCrime.metrics.map((metric) => {
@@ -389,6 +414,9 @@ function renderFocusCrime() {
 
 function renderFocusCrimeEditor() {
   const focusCrime = state.accomplishments.focusCrime || defaultAccomplishments.focusCrime;
+  document.querySelector("#focus-crime-date-inputs").innerHTML = `
+    <label><span>Covered period</span><input maxlength="160" value="${escapeHtml(focusCrime.coveredPeriod)}" data-focus-date="coveredPeriod" /></label>
+    <label><span>As of date</span><input maxlength="80" value="${escapeHtml(focusCrime.asOfDate)}" data-focus-date="asOfDate" /></label>`;
   document.querySelector("#focus-crime-inputs").innerHTML = focusCrime.metrics.map((metric) => `
     <label><span>${escapeHtml(metric.label)}</span><input type="number" min="0" step="1" value="${metric.value}" data-focus-crime-id="${metric.id}" /></label>`).join("");
 }
@@ -413,6 +441,9 @@ async function saveFocusCrime(event) {
   editor.querySelectorAll("[data-focus-crime-id]").forEach((input) => {
     const metric = focusCrime.metrics.find((item) => item.id === input.dataset.focusCrimeId);
     if (metric) metric.value = Math.max(0, Number(input.value) || 0);
+  });
+  editor.querySelectorAll("[data-focus-date]").forEach((input) => {
+    focusCrime[input.dataset.focusDate] = input.value.trim();
   });
   next.focusCrime = focusCrime;
   button.disabled = true;
@@ -533,6 +564,63 @@ function renderCompliance() {
   document.querySelector("#summary-label").textContent = completed === complianceItems.length
     ? "All requirements are marked complied."
     : `${complianceItems.length - completed} requirement${complianceItems.length - completed === 1 ? "" : "s"} still red.`;
+}
+
+function reportDateMarkup(key, meta) {
+  return `
+    <div class="report-date-strip">
+      <span><small>Covered period</small><strong>${escapeHtml(meta.coveredPeriod)}</strong></span>
+      <span><small>As of date</small><strong>${escapeHtml(meta.asOfDate)}</strong></span>
+      <button type="button" data-edit-report-dates="${key}">Edit dates</button>
+    </div>
+    <form class="report-date-editor" data-report-date-form="${key}" hidden>
+      <label><span>Covered period</span><input name="coveredPeriod" maxlength="160" value="${escapeHtml(meta.coveredPeriod)}" /></label>
+      <label><span>As of date</span><input name="asOfDate" maxlength="80" value="${escapeHtml(meta.asOfDate)}" /></label>
+      <button type="submit">Save dates</button>
+    </form>`;
+}
+
+function renderReportDateHosts() {
+  document.querySelectorAll("[data-report-date-key]").forEach((host) => {
+    const key = host.dataset.reportDateKey;
+    const meta = state.accomplishments.workspaceReports?.[key] || defaultAccomplishments.workspaceReports[key];
+    host.innerHTML = reportDateMarkup(key, meta);
+    host.querySelector("[data-edit-report-dates]").addEventListener("click", (event) => {
+      const form = host.querySelector("[data-report-date-form]");
+      form.hidden = !form.hidden;
+      event.currentTarget.textContent = form.hidden ? "Edit dates" : "Close";
+    });
+    host.querySelector("[data-report-date-form]").addEventListener("submit", saveReportDates);
+  });
+}
+
+async function saveReportDates(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const key = form.dataset.reportDateForm;
+  const button = form.querySelector("button[type=\"submit\"]");
+  const payload = structuredClone(state.accomplishments);
+  payload.workspaceReports = {
+    ...defaultAccomplishments.workspaceReports,
+    ...(payload.workspaceReports || {}),
+    [key]: {
+      coveredPeriod: form.elements.coveredPeriod.value.trim(),
+      asOfDate: form.elements.asOfDate.value.trim(),
+    },
+  };
+  button.disabled = true;
+  button.textContent = "Saving…";
+  try {
+    const data = await request("/api/accomplishments", { method: "POST", body: JSON.stringify(payload) });
+    state.accomplishments = data.accomplishments;
+    renderReportDateHosts();
+    renderAccomplishments();
+    renderFocusCrime();
+  } catch (error) {
+    window.alert(error.message);
+    button.disabled = false;
+    button.textContent = "Save dates";
+  }
 }
 
 function setWorkspace(view, options = {}) {
@@ -802,5 +890,6 @@ renderCalendar();
 renderOplanKatokSummary();
 renderAccomplishments();
 renderFocusCrime();
+renderReportDateHosts();
 Promise.all([loadStatuses(), loadActivities(), loadOplanKatokSummary(), loadAccomplishments()]);
 window.setInterval(loadOplanKatokSummary, 5 * 60 * 1000);
