@@ -236,6 +236,11 @@ input:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px r
 .frequency { padding: 3px 7px; color: var(--blue); border-radius: 999px; background: var(--blue-light); font-size: .64rem; font-weight: 800; text-transform: uppercase; }
 .workspace-link { color: var(--blue); font-size: .75rem; font-weight: 800; text-decoration: none; }
 .workspace-link:hover { text-decoration: underline; }
+.detection-note { display: inline-flex; align-items: center; gap: 6px; width: fit-content; margin-top: 9px; color: #667085; font-size: .67rem; font-weight: 700; }
+.detection-note::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #98a2b3; }
+.detection-note.automatic { color: #087a50; }
+.detection-note.automatic::before { background: var(--green); box-shadow: 0 0 0 3px #dff7eb; }
+.detection-note.watching::before { background: var(--blue); box-shadow: 0 0 0 3px #e4f0ff; }
 .status-toggle { display: flex; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; }
 .status-toggle button { min-height: 41px; padding: 0 12px; color: var(--muted); border: 0; background: white; font-size: .72rem; font-weight: 800; cursor: pointer; }
 .status-toggle button + button { border-left: 1px solid var(--line); }
