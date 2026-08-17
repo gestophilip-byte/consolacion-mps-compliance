@@ -36,6 +36,7 @@
         <a href="#calendar">Calendar</a>
         <a href="#compliance" data-workspace-view="google-links">Compliance</a>
         <a href="#compliance" data-workspace-view="accomplishments">Accomplishments</a>
+        <a href="#compliance" data-workspace-view="focus-crime">8 Focus Crime</a>
         <a href="#compliance" data-workspace-view="oplan-katok">Oplan Katok</a>
         <a href="#compliance" data-workspace-view="map">Map</a>
       </nav>
@@ -169,6 +170,7 @@
           <button class="active" type="button" role="tab" aria-selected="true" data-workspace-view="google-links">Google Links</button>
           <button type="button" role="tab" aria-selected="false" data-workspace-view="aars">AARs</button>
           <button type="button" role="tab" aria-selected="false" data-workspace-view="accomplishments">Accomplishments</button>
+          <button type="button" role="tab" aria-selected="false" data-workspace-view="focus-crime">8 Focus Crime</button>
           <button type="button" role="tab" aria-selected="false" data-workspace-view="oplan-katok">Oplan Katok</button>
           <button type="button" role="tab" aria-selected="false" data-workspace-view="map">Google Map</button>
         </div>
@@ -211,6 +213,23 @@
         </form>
 
         <div id="campaign-grid" class="campaign-grid single-campaign" aria-live="polite" role="tabpanel"></div>
+      </section>
+
+      <section class="focus-crime-section" id="focus-crime" aria-labelledby="focus-crime-title">
+        <div class="section-heading focus-crime-heading">
+          <div><p class="kicker">Crime monitoring</p><h2 id="focus-crime-title">8 Focus Crime</h2></div>
+          <button class="button focus-crime-edit" id="focus-crime-edit-toggle" type="button">Edit figures</button>
+        </div>
+        <p id="focus-crime-message" class="accomplishments-message" role="status" aria-live="polite"></p>
+        <form id="focus-crime-editor" class="focus-crime-editor" hidden>
+          <div><p class="kicker">Shared editor</p><h3>Update focus-crime figures</h3><p>Change the figures that need updating, then save once.</p></div>
+          <div id="focus-crime-inputs" class="focus-crime-inputs"></div>
+          <button class="button primary" type="submit">Save 8 Focus Crime figures</button>
+        </form>
+        <article class="focus-crime-card">
+          <div id="focus-crime-chart" class="focus-crime-chart" role="img" aria-label="8 Focus Crime totals"></div>
+          <div id="focus-crime-legend" class="focus-crime-legend"></div>
+        </article>
       </section>
 
       <section class="records-section" id="oplan-katok" aria-labelledby="katok-title">
