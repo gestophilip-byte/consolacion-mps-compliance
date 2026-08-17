@@ -87,9 +87,75 @@ const complianceItems = [
   },
 ];
 
+const defaultAccomplishments = {
+  updatedAt: null,
+  campaigns: [
+    {
+      id: "illegal-drugs",
+      title: "Campaign Against Illegal Drugs",
+      period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      chartMetrics: [
+        { id: "operations", label: "Operations", year2025: 51, year2026: 48 },
+        { id: "persons-arrested", label: "Persons arrested", year2025: 110, year2026: 67 },
+        { id: "high-value", label: "High-value", year2025: 3, year2026: 1 },
+        { id: "street-level", label: "Street-level", year2025: 38, year2026: 20 },
+        { id: "newly-identified", label: "Newly identified", year2025: 69, year2026: 46 },
+      ],
+      tableTitle: "Illegal drugs confiscated",
+      tableMetrics: [
+        { id: "shabu-grams", label: "Shabu (grams)", year2025: 922.05, year2026: 104.71, kind: "decimal" },
+        { id: "marijuana-leaves", label: "Marijuana dried leaves (g)", year2025: null, year2026: 6, kind: "decimal" },
+        { id: "marijuana-plants", label: "Marijuana plants (stalks)", year2025: null, year2026: null },
+        { id: "estimated-value", label: "Estimated value", year2025: 6269940, year2026: 712748, kind: "currency" },
+      ],
+    },
+    {
+      id: "wanted-persons",
+      title: "Campaign Against Wanted Persons",
+      period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      chartMetrics: [
+        { id: "warrants-served", label: "Warrants served", year2025: 38, year2026: 44 },
+        { id: "operations", label: "Operations", year2025: 38, year2026: 44 },
+        { id: "persons-arrested", label: "Persons arrested", year2025: 38, year2026: 44 },
+        { id: "most-wanted", label: "Most Wanted Persons", year2025: 4, year2026: 3 },
+        { id: "other-wanted", label: "Other wanted persons", year2025: 34, year2026: 41 },
+      ],
+    },
+    {
+      id: "illegal-gambling",
+      title: "Campaign Against Illegal Gambling",
+      period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      chartMetrics: [
+        { id: "operations-conducted", label: "Operations conducted", year2025: 38, year2026: 19 },
+        { id: "persons-arrested", label: "Persons arrested", year2025: 43, year2026: 35 },
+      ],
+      tableTitle: "Confiscated amount",
+      tableMetrics: [
+        { id: "amount-confiscated", label: "Amount confiscated", year2025: 9758, year2026: 2507, kind: "currency" },
+      ],
+    },
+    {
+      id: "loose-firearms",
+      title: "Campaign Against Loose Firearms",
+      period: "1 January – 31 July 2025 vs 1 January – 31 July 2026",
+      chartMetrics: [
+        { id: "total-operations", label: "Total operations", year2025: 8, year2026: 5 },
+        { id: "arrested-suspects", label: "Arrested suspects", year2025: 8, year2026: 5 },
+        { id: "fas-seized", label: "FAs seized / recovered", year2025: 8, year2026: 5 },
+        { id: "oplan-katok-operations", label: "Oplan Katok operations", year2025: 8, year2026: 0 },
+        { id: "police-response", label: "Police response", year2025: 8, year2026: 9 },
+        { id: "search-warrants", label: "Search warrants", year2025: 4, year2026: 2 },
+        { id: "fas-surrendered", label: "FAs surrendered", year2025: 8, year2026: 9 },
+        { id: "fas-accounted", label: "FAs accounted (total)", year2025: 24, year2026: 14 },
+      ],
+    },
+  ],
+};
+
 const state = {
   activities: [],
   statuses: Object.fromEntries(complianceItems.map((item) => [item.id, false])),
+  accomplishments: structuredClone(defaultAccomplishments),
   oplanKatok: {
     masterRecords: 357,
     individuals: 237,
@@ -101,6 +167,166 @@ const state = {
   tomorrowKey: localDateKey(addDays(new Date(), 1)),
   month: startOfMonth(new Date()),
 };
+
+function accomplishmentValue(metric, value) {
+  if (value === null || value === undefined || value === "") return "—";
+  if (metric.kind === "currency") {
+    return new Intl.NumberFormat("en-PH", {
+      style: "currency",
+      currency: "PHP",
+      maximumFractionDigits: 2,
+    }).format(value);
+  }
+  return new Intl.NumberFormat("en-PH", {
+    maximumFractionDigits: metric.kind === "decimal" ? 2 : 0,
+  }).format(value);
+}
+
+function accomplishmentsUpdatedLabel(value) {
+  if (!value) return "Using the figures supplied in the current accomplishment report.";
+  const normalized = value.includes("T") ? value : `${value.replace(" ", "T")}Z`;
+  const date = new Date(normalized);
+  if (Number.isNaN(date.getTime())) return "Saved figures are active.";
+  return `Last updated ${new Intl.DateTimeFormat("en-PH", {
+    timeZone: "Asia/Manila",
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(date)}.`;
+}
+
+function campaignTableMarkup(campaign) {
+  if (!campaign.tableMetrics?.length) return "";
+  return `
+    <div class="campaign-table-wrap">
+      <table class="campaign-table">
+        <thead><tr><th>${escapeHtml(campaign.tableTitle || "Indicator")}</th><th>2025</th><th>2026</th>${campaign.id === "illegal-gambling" ? "<th>Variance</th>" : ""}</tr></thead>
+        <tbody>${campaign.tableMetrics.map((metric) => {
+          const variance = (metric.year2026 || 0) - (metric.year2025 || 0);
+          return `<tr><td>${escapeHtml(metric.label)}</td><td>${accomplishmentValue(metric, metric.year2025)}</td><td>${accomplishmentValue(metric, metric.year2026)}</td>${campaign.id === "illegal-gambling" ? `<td class="${variance < 0 ? "negative" : "positive"}">${accomplishmentValue(metric, variance)}</td>` : ""}</tr>`;
+        }).join("")}</tbody>
+      </table>
+    </div>`;
+}
+
+function campaignMarkup(campaign) {
+  const maximum = Math.max(1, ...campaign.chartMetrics.flatMap((metric) => [metric.year2025 || 0, metric.year2026 || 0]));
+  return `
+    <article class="campaign-card">
+      <div class="campaign-card-heading">
+        <div><p class="kicker">Operational accomplishment</p><h3>${escapeHtml(campaign.title)}</h3></div>
+        <span class="comparison-chip">2025 vs 2026</span>
+      </div>
+      <p class="campaign-period">${escapeHtml(campaign.period)}</p>
+      <div class="campaign-chart" style="--metric-count:${campaign.chartMetrics.length}" role="img" aria-label="${escapeHtml(campaign.title)}, 2025 and 2026 comparison">
+        ${campaign.chartMetrics.map((metric) => `
+          <div class="campaign-chart-group">
+            <div class="campaign-bars">
+              ${["year2025", "year2026"].map((year) => {
+                const value = metric[year] || 0;
+                const height = value === 0 ? 2 : Math.max(7, (value / maximum) * 100);
+                return `<span class="campaign-bar ${year}" style="height:${height}%"><b>${accomplishmentValue(metric, value)}</b></span>`;
+              }).join("")}
+            </div>
+            <small>${escapeHtml(metric.label)}</small>
+          </div>`).join("")}
+      </div>
+      <div class="campaign-legend"><span><i class="year-2025"></i>2025</span><span><i class="year-2026"></i>2026</span></div>
+      ${campaignTableMarkup(campaign)}
+    </article>`;
+}
+
+function renderAccomplishments() {
+  document.querySelector("#campaign-grid").innerHTML = state.accomplishments.campaigns.map(campaignMarkup).join("");
+  document.querySelector("#accomplishments-updated").textContent = accomplishmentsUpdatedLabel(state.accomplishments.updatedAt);
+}
+
+function editorMetricMarkup(campaign, metric, collection) {
+  return `
+    <div class="editor-metric-row ${collection === "tableMetrics" ? "table-metric" : ""}">
+      <span>${escapeHtml(metric.label)}</span>
+      <input aria-label="${escapeHtml(metric.label)} 2025" type="number" min="0" step="any" value="${metric.year2025 ?? ""}" data-campaign="${campaign.id}" data-collection="${collection}" data-metric="${metric.id}" data-year="year2025" />
+      <input aria-label="${escapeHtml(metric.label)} 2026" type="number" min="0" step="any" value="${metric.year2026 ?? ""}" data-campaign="${campaign.id}" data-collection="${collection}" data-metric="${metric.id}" data-year="year2026" />
+    </div>`;
+}
+
+function renderAccomplishmentsEditor() {
+  document.querySelector("#editor-campaigns").innerHTML = state.accomplishments.campaigns.map((campaign) => `
+    <fieldset>
+      <legend>${escapeHtml(campaign.title)}</legend>
+      <label class="period-field"><span>Comparison period</span><input maxlength="160" value="${escapeHtml(campaign.period)}" data-campaign="${campaign.id}" data-period="true" /></label>
+      <div class="editor-metric-header"><span>Indicator</span><span>2025</span><span>2026</span></div>
+      ${campaign.chartMetrics.map((metric) => editorMetricMarkup(campaign, metric, "chartMetrics")).join("")}
+      ${(campaign.tableMetrics || []).map((metric) => editorMetricMarkup(campaign, metric, "tableMetrics")).join("")}
+    </fieldset>`).join("");
+}
+
+function readAccomplishmentsEditor() {
+  const next = structuredClone(state.accomplishments);
+  document.querySelectorAll("#accomplishments-editor input").forEach((input) => {
+    const campaign = next.campaigns.find((item) => item.id === input.dataset.campaign);
+    if (!campaign) return;
+    if (input.dataset.period) {
+      campaign.period = input.value.trim();
+      return;
+    }
+    const collection = input.dataset.collection;
+    const metric = (campaign[collection] || []).find((item) => item.id === input.dataset.metric);
+    if (metric) metric[input.dataset.year] = input.value === "" ? null : Math.max(0, Number(input.value) || 0);
+  });
+  return next;
+}
+
+async function loadAccomplishments() {
+  const message = document.querySelector("#accomplishments-message");
+  try {
+    const data = await request("/api/accomplishments");
+    if (data.accomplishments) state.accomplishments = data.accomplishments;
+    message.textContent = "";
+    message.className = "accomplishments-message";
+  } catch (error) {
+    message.textContent = `${error.message} Showing the supplied report figures.`;
+    message.className = "accomplishments-message error";
+  }
+  renderAccomplishments();
+}
+
+function toggleAccomplishmentsEditor() {
+  const editor = document.querySelector("#accomplishments-editor");
+  const button = document.querySelector("#accomplishments-edit-toggle");
+  const opening = editor.hidden;
+  editor.hidden = !opening;
+  button.textContent = opening ? "Close editor" : "Edit figures";
+  if (opening) renderAccomplishmentsEditor();
+}
+
+async function saveAccomplishments(event) {
+  event.preventDefault();
+  const editor = event.currentTarget;
+  const button = editor.querySelector("button[type='submit']");
+  const message = document.querySelector("#accomplishments-message");
+  button.disabled = true;
+  button.textContent = "Saving figures…";
+  message.textContent = "Saving the updated figures for all visitors…";
+  message.className = "accomplishments-message";
+  try {
+    const data = await request("/api/accomplishments", {
+      method: "POST",
+      body: JSON.stringify(readAccomplishmentsEditor()),
+    });
+    state.accomplishments = data.accomplishments;
+    renderAccomplishments();
+    editor.hidden = true;
+    document.querySelector("#accomplishments-edit-toggle").textContent = "Edit figures";
+    message.textContent = "Figures saved. The public charts and tables are now updated.";
+    message.className = "accomplishments-message success";
+  } catch (error) {
+    message.textContent = error.message;
+    message.className = "accomplishments-message error";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Save all figures";
+  }
+}
 
 function addDays(date, days) {
   const next = new Date(date);
@@ -410,10 +636,13 @@ document.querySelector("#next-month").addEventListener("click", () => {
   renderCalendar();
 });
 document.querySelector("#activity-form").addEventListener("submit", submitActivity);
+document.querySelector("#accomplishments-edit-toggle").addEventListener("click", toggleAccomplishmentsEditor);
+document.querySelector("#accomplishments-editor").addEventListener("submit", saveAccomplishments);
 document.querySelector("input[name='activityDate']").min = localDateKey(new Date());
 
 renderCompliance();
 renderCalendar();
 renderOplanKatokSummary();
-Promise.all([loadStatuses(), loadActivities(), loadOplanKatokSummary()]);
+renderAccomplishments();
+Promise.all([loadStatuses(), loadActivities(), loadOplanKatokSummary(), loadAccomplishments()]);
 window.setInterval(loadOplanKatokSummary, 5 * 60 * 1000);
