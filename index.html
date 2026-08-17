@@ -176,9 +176,11 @@
         </div>
         <div id="workspace-viewer" class="workspace-viewer" aria-live="polite">
           <div id="google-links-panel" class="workspace-panel" data-workspace-panel="google-links">
+            <div class="report-date-host" data-report-date-key="googleLinks"></div>
             <div id="compliance-list" class="compliance-list"></div>
           </div>
           <div id="aars-panel" class="workspace-panel workspace-empty" data-workspace-panel="aars" hidden>
+            <div class="report-date-host" data-report-date-key="aars"></div>
             <p class="kicker">After-activity reports</p>
             <h3>AAR workspace</h3>
             <p>Send the AAR links or documents and they can be added here.</p>
@@ -223,10 +225,12 @@
         <p id="focus-crime-message" class="accomplishments-message" role="status" aria-live="polite"></p>
         <form id="focus-crime-editor" class="focus-crime-editor" hidden>
           <div><p class="kicker">Shared editor</p><h3>Update focus-crime figures</h3><p>Change the figures that need updating, then save once.</p></div>
+          <div id="focus-crime-date-inputs" class="focus-crime-date-inputs"></div>
           <div id="focus-crime-inputs" class="focus-crime-inputs"></div>
           <button class="button primary" type="submit">Save 8 Focus Crime figures</button>
         </form>
         <article class="focus-crime-card">
+          <div id="focus-crime-dates" class="inline-report-dates"></div>
           <div id="focus-crime-chart" class="focus-crime-chart" role="img" aria-label="8 Focus Crime totals"></div>
           <div id="focus-crime-legend" class="focus-crime-legend"></div>
         </article>
@@ -240,6 +244,7 @@
             Protected operational data remains in its Google Sheet. This public page shows
             aggregate totals only and does not expose personal record details.
           </p>
+          <div class="report-date-host" data-report-date-key="oplanKatok"></div>
           <a
             class="button primary"
             href="https://docs.google.com/spreadsheets/d/1Wlt_lA9_i74-z4zMz8fn-sj3V1OnwsYsewMRv9gLkSo/edit"
@@ -272,6 +277,7 @@
             rel="noopener noreferrer"
           >Open full map ↗</a>
         </div>
+        <div class="report-date-host" data-report-date-key="googleMap"></div>
         <div class="map-frame">
           <iframe
             src="https://www.google.com/maps/d/embed?mid=1be_NyIRa0t8fZpfgSaZi2MFhPi5Zxq4&ehbc=2E312F"
