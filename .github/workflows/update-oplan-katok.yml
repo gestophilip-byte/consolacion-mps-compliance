@@ -1,0 +1,55 @@
+# Hourly sync of oplan-katok-summary.json from the Apps Script endpoint.
+# Requires one repository secret:
+#   KATOK_ENDPOINT = https://script.google.com/macros/s/XXXX/exec?view=katok
+
+name: Update Oplan Katok summary
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour, on the hour (UTC)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Fetch latest aggregates
+        run: |
+          curl -sL --fail --max-time 60 "${{ secrets.KATOK_ENDPOINT }}" -o katok-new.json
+
+          # Validate before touching the live file: must be JSON with 4 numeric fields
+          for field in masterRecords individuals smallArms lightWeapons; do
+            value=$(jq -r ".${field}" katok-new.json)
+            case "$value" in
+              ''|null|*[!0-9.]*) echo "Invalid ${field}: ${value}"; exit 1 ;;
+            esac
+          done
+
+          jq . katok-new.json > oplan-katok-summary.json
+          rm katok-new.json
+
+      - name: Commit if totals changed
+        run: |
+          git config user.name  "katok-sync-bot"
+          git config user.email "actions@users.noreply.github.com"
+
+          # Ignore the syncedAt timestamp when deciding whether totals changed
+          if git show HEAD:oplan-katok-summary.json 2>/dev/null | jq 'del(.syncedAt)' > old.json; then
+            jq 'del(.syncedAt)' oplan-katok-summary.json > new.json
+            if cmp -s old.json new.json; then
+              echo "No change in totals — skipping commit."
+              rm -f old.json new.json
+              exit 0
+            fi
+            rm -f old.json new.json
+          fi
+
+          git add oplan-katok-summary.json
+          git commit -m "chore: hourly Oplan Katok totals sync"
+          git push
