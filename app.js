@@ -156,6 +156,7 @@ const state = {
   activities: [],
   statuses: Object.fromEntries(complianceItems.map((item) => [item.id, false])),
   accomplishments: structuredClone(defaultAccomplishments),
+  activeAccomplishmentCampaign: defaultAccomplishments.campaigns[0].id,
   oplanKatok: {
     masterRecords: 357,
     individuals: 237,
@@ -236,7 +237,29 @@ function campaignMarkup(campaign) {
 }
 
 function renderAccomplishments() {
-  document.querySelector("#campaign-grid").innerHTML = state.accomplishments.campaigns.map(campaignMarkup).join("");
+  const campaigns = state.accomplishments.campaigns;
+  if (!campaigns.some((campaign) => campaign.id === state.activeAccomplishmentCampaign)) {
+    state.activeAccomplishmentCampaign = campaigns[0]?.id ?? "";
+  }
+
+  const switcher = document.querySelector("#campaign-switcher");
+  switcher.innerHTML = campaigns.map((campaign) => {
+    const active = campaign.id === state.activeAccomplishmentCampaign;
+    const shortTitle = campaign.title.replace(/^Campaign Against\s+/i, "");
+    return `<button class="${active ? "active" : ""}" type="button" role="tab" aria-selected="${active}" data-campaign-id="${escapeHtml(campaign.id)}">
+      <span>${escapeHtml(shortTitle)}</span>
+      <small>${active ? "Currently displayed" : "Click to view"}</small>
+    </button>`;
+  }).join("");
+  switcher.querySelectorAll("[data-campaign-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.activeAccomplishmentCampaign = button.dataset.campaignId;
+      renderAccomplishments();
+    });
+  });
+
+  const activeCampaign = campaigns.find((campaign) => campaign.id === state.activeAccomplishmentCampaign);
+  document.querySelector("#campaign-grid").innerHTML = activeCampaign ? campaignMarkup(activeCampaign) : "";
   document.querySelector("#accomplishments-updated").textContent = accomplishmentsUpdatedLabel(state.accomplishments.updatedAt);
 }
 
