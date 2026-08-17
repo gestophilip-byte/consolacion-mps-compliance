@@ -89,6 +89,19 @@ const complianceItems = [
 
 const defaultAccomplishments = {
   updatedAt: null,
+  focusCrime: {
+    title: "8 Focus Crime",
+    metrics: [
+      { id: "murder", label: "Murder", value: 1, color: "#249326" },
+      { id: "homicide", label: "Homicide", value: 1, color: "#2e2aff" },
+      { id: "physical-injury", label: "Physical Injury", value: 4, color: "#ffb327" },
+      { id: "rape", label: "Rape", value: 6, color: "#d4863c" },
+      { id: "robbery", label: "Robbery", value: 3, color: "#72b2dc" },
+      { id: "theft", label: "Theft", value: 8, color: "#d4796f" },
+      { id: "carnapping-mv", label: "Carnapping MV", value: 0, color: "#61356f" },
+      { id: "carnapping-mc", label: "Carnapping MC", value: 0, color: "#5e696c" },
+    ],
+  },
   campaigns: [
     {
       id: "illegal-drugs",
@@ -304,7 +317,11 @@ async function loadAccomplishments() {
   const message = document.querySelector("#accomplishments-message");
   try {
     const data = await request("/api/accomplishments");
-    if (data.accomplishments) state.accomplishments = data.accomplishments;
+    if (data.accomplishments) state.accomplishments = {
+      ...defaultAccomplishments,
+      ...data.accomplishments,
+      focusCrime: data.accomplishments.focusCrime || defaultAccomplishments.focusCrime,
+    };
     message.textContent = "";
     message.className = "accomplishments-message";
   } catch (error) {
@@ -312,6 +329,7 @@ async function loadAccomplishments() {
     message.className = "accomplishments-message error";
   }
   renderAccomplishments();
+  renderFocusCrime();
 }
 
 function toggleAccomplishmentsEditor() {
@@ -349,6 +367,73 @@ async function saveAccomplishments(event) {
   } finally {
     button.disabled = false;
     button.textContent = "Save all figures";
+  }
+}
+
+function renderFocusCrime() {
+  const focusCrime = state.accomplishments.focusCrime || defaultAccomplishments.focusCrime;
+  const maximum = Math.max(1, ...focusCrime.metrics.map((metric) => metric.value));
+  const chart = document.querySelector("#focus-crime-chart");
+  chart.style.setProperty("--crime-count", focusCrime.metrics.length);
+  chart.innerHTML = focusCrime.metrics.map((metric) => {
+    const height = metric.value === 0 ? 2 : Math.max(8, (metric.value / maximum) * 100);
+    return `<div class="focus-crime-group">
+      <div class="focus-crime-bar-space"><span class="focus-crime-bar" style="height:${height}%;background:${metric.color}"><b>${metric.value}</b></span></div>
+      <small>${escapeHtml(metric.label)}</small>
+    </div>`;
+  }).join("");
+  document.querySelector("#focus-crime-legend").innerHTML = focusCrime.metrics
+    .map((metric) => `<span><i style="background:${metric.color}"></i>${escapeHtml(metric.label)}</span>`)
+    .join("");
+}
+
+function renderFocusCrimeEditor() {
+  const focusCrime = state.accomplishments.focusCrime || defaultAccomplishments.focusCrime;
+  document.querySelector("#focus-crime-inputs").innerHTML = focusCrime.metrics.map((metric) => `
+    <label><span>${escapeHtml(metric.label)}</span><input type="number" min="0" step="1" value="${metric.value}" data-focus-crime-id="${metric.id}" /></label>`).join("");
+}
+
+function toggleFocusCrimeEditor() {
+  const editor = document.querySelector("#focus-crime-editor");
+  const button = document.querySelector("#focus-crime-edit-toggle");
+  const opening = editor.hidden;
+  editor.hidden = !opening;
+  button.textContent = opening ? "Close editor" : "Edit figures";
+  document.querySelector("#focus-crime-message").textContent = "";
+  if (opening) renderFocusCrimeEditor();
+}
+
+async function saveFocusCrime(event) {
+  event.preventDefault();
+  const editor = event.currentTarget;
+  const button = editor.querySelector("button[type='submit']");
+  const message = document.querySelector("#focus-crime-message");
+  const next = structuredClone(state.accomplishments);
+  const focusCrime = next.focusCrime || structuredClone(defaultAccomplishments.focusCrime);
+  editor.querySelectorAll("[data-focus-crime-id]").forEach((input) => {
+    const metric = focusCrime.metrics.find((item) => item.id === input.dataset.focusCrimeId);
+    if (metric) metric.value = Math.max(0, Number(input.value) || 0);
+  });
+  next.focusCrime = focusCrime;
+  button.disabled = true;
+  button.textContent = "Saving figures…";
+  message.textContent = "Saving the 8 Focus Crime figures for all visitors…";
+  message.className = "accomplishments-message";
+  try {
+    const data = await request("/api/accomplishments", { method: "POST", body: JSON.stringify(next) });
+    state.accomplishments = data.accomplishments;
+    renderFocusCrime();
+    renderAccomplishments();
+    editor.hidden = true;
+    document.querySelector("#focus-crime-edit-toggle").textContent = "Edit figures";
+    message.textContent = "8 Focus Crime figures saved and updated for all visitors.";
+    message.className = "accomplishments-message success";
+  } catch (error) {
+    message.textContent = error.message;
+    message.className = "accomplishments-message error";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Save 8 Focus Crime figures";
   }
 }
 
@@ -451,7 +536,7 @@ function renderCompliance() {
 }
 
 function setWorkspace(view, options = {}) {
-  const allowed = ["google-links", "aars", "accomplishments", "oplan-katok", "map"];
+  const allowed = ["google-links", "aars", "accomplishments", "focus-crime", "oplan-katok", "map"];
   state.activeWorkspace = allowed.includes(view) ? view : "google-links";
 
   document.querySelectorAll("[data-workspace-panel]").forEach((panel) => {
@@ -472,6 +557,7 @@ function initializeWorkspace() {
   const viewer = document.querySelector("#workspace-viewer");
   [
     ["accomplishments", "accomplishments"],
+    ["focus-crime", "focus-crime"],
     ["oplan-katok", "oplan-katok"],
     ["map", "map"],
   ].forEach(([id, view]) => {
@@ -483,6 +569,7 @@ function initializeWorkspace() {
 
   const initialByHash = {
     "#accomplishments": "accomplishments",
+    "#focus-crime": "focus-crime",
     "#oplan-katok": "oplan-katok",
     "#map": "map",
   };
@@ -705,6 +792,8 @@ document.querySelector("#next-month").addEventListener("click", () => {
 document.querySelector("#activity-form").addEventListener("submit", submitActivity);
 document.querySelector("#accomplishments-edit-toggle").addEventListener("click", toggleAccomplishmentsEditor);
 document.querySelector("#accomplishments-editor").addEventListener("submit", saveAccomplishments);
+document.querySelector("#focus-crime-edit-toggle").addEventListener("click", toggleFocusCrimeEditor);
+document.querySelector("#focus-crime-editor").addEventListener("submit", saveFocusCrime);
 document.querySelector("input[name='activityDate']").min = localDateKey(new Date());
 
 initializeWorkspace();
@@ -712,5 +801,6 @@ renderCompliance();
 renderCalendar();
 renderOplanKatokSummary();
 renderAccomplishments();
+renderFocusCrime();
 Promise.all([loadStatuses(), loadActivities(), loadOplanKatokSummary(), loadAccomplishments()]);
 window.setInterval(loadOplanKatokSummary, 5 * 60 * 1000);
