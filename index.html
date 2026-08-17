@@ -34,10 +34,10 @@
       </a>
       <nav aria-label="Main navigation">
         <a href="#calendar">Calendar</a>
-        <a href="#compliance">Compliance</a>
-        <a href="#accomplishments">Accomplishments</a>
-        <a href="#oplan-katok">Oplan Katok</a>
-        <a href="#map">Map</a>
+        <a href="#compliance" data-workspace-view="google-links">Compliance</a>
+        <a href="#compliance" data-workspace-view="accomplishments">Accomplishments</a>
+        <a href="#compliance" data-workspace-view="oplan-katok">Oplan Katok</a>
+        <a href="#compliance" data-workspace-view="map">Map</a>
       </nav>
     </header>
 
@@ -165,7 +165,23 @@
             <span><i class="dot green"></i>Complied</span>
           </div>
         </div>
-        <div id="compliance-list" class="compliance-list" aria-live="polite"></div>
+        <div id="workspace-tabs" class="workspace-tabs" role="tablist" aria-label="Choose portal content">
+          <button class="active" type="button" role="tab" aria-selected="true" data-workspace-view="google-links">Google Links</button>
+          <button type="button" role="tab" aria-selected="false" data-workspace-view="aars">AARs</button>
+          <button type="button" role="tab" aria-selected="false" data-workspace-view="accomplishments">Accomplishments</button>
+          <button type="button" role="tab" aria-selected="false" data-workspace-view="oplan-katok">Oplan Katok</button>
+          <button type="button" role="tab" aria-selected="false" data-workspace-view="map">Google Map</button>
+        </div>
+        <div id="workspace-viewer" class="workspace-viewer" aria-live="polite">
+          <div id="google-links-panel" class="workspace-panel" data-workspace-panel="google-links">
+            <div id="compliance-list" class="compliance-list"></div>
+          </div>
+          <div id="aars-panel" class="workspace-panel workspace-empty" data-workspace-panel="aars" hidden>
+            <p class="kicker">After-activity reports</p>
+            <h3>AAR workspace</h3>
+            <p>Send the AAR links or documents and they can be added here.</p>
+          </div>
+        </div>
       </section>
 
       <section class="accomplishments-section" id="accomplishments" aria-labelledby="accomplishments-title">
