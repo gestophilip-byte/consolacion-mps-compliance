@@ -180,6 +180,7 @@ const defaultAccomplishments = {
 const state = {
   activities: [],
   statuses: Object.fromEntries(complianceItems.map((item) => [item.id, false])),
+  statusSources: Object.fromEntries(complianceItems.map((item) => [item.id, "manual-check"])),
   accomplishments: structuredClone(defaultAccomplishments),
   activeAccomplishmentCampaign: defaultAccomplishments.campaigns[0].id,
   activeWorkspace: "google-links",
@@ -523,6 +524,7 @@ async function loadStatuses() {
   try {
     const data = await request("/api/status");
     state.statuses = { ...state.statuses, ...(data.statuses || {}) };
+    state.statusSources = { ...state.statusSources, ...(data.statusSources || {}) };
     document.querySelector("#date-label").textContent = data.dateLabel || "Philippine time";
   } catch (error) {
     document.querySelector("#summary-label").textContent = error.message;
@@ -535,6 +537,14 @@ function renderCompliance() {
   list.innerHTML = complianceItems
     .map((item, index) => {
       const complied = Boolean(state.statuses[item.id]);
+      const source = state.statusSources[item.id] || "manual-check";
+      const sourceNote = source === "automatic"
+        ? "Detected from the current Consolacion entry"
+        : source === "watching"
+          ? "Watching the current Consolacion row or tab"
+          : source === "manual"
+            ? "Manually confirmed for this period"
+            : "Manual confirmation available for this source";
       return `
         <article class="compliance-item ${complied ? "is-complied" : ""}" data-item-id="${item.id}">
           <span class="compliance-number">${String(index + 1).padStart(2, "0")}</span>
@@ -545,6 +555,7 @@ function renderCompliance() {
               <span class="frequency">${item.frequency}</span>
               <a class="workspace-link" href="${item.href}" target="_blank" rel="noopener noreferrer">Open Google workspace ↗</a>
             </div>
+            <small class="detection-note ${source}">${sourceNote}</small>
           </div>
           <div class="status-toggle" role="group" aria-label="Status for ${escapeHtml(item.title)}">
             <button type="button" class="${complied ? "" : "active-no"}" data-complied="false">Red • Not complied</button>
@@ -892,4 +903,5 @@ renderAccomplishments();
 renderFocusCrime();
 renderReportDateHosts();
 Promise.all([loadStatuses(), loadActivities(), loadOplanKatokSummary(), loadAccomplishments()]);
+window.setInterval(loadStatuses, 2 * 60 * 1000);
 window.setInterval(loadOplanKatokSummary, 5 * 60 * 1000);
