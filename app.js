@@ -157,6 +157,7 @@ const state = {
   statuses: Object.fromEntries(complianceItems.map((item) => [item.id, false])),
   accomplishments: structuredClone(defaultAccomplishments),
   activeAccomplishmentCampaign: defaultAccomplishments.campaigns[0].id,
+  activeWorkspace: "google-links",
   oplanKatok: {
     masterRecords: 357,
     individuals: 237,
@@ -449,6 +450,49 @@ function renderCompliance() {
     : `${complianceItems.length - completed} requirement${complianceItems.length - completed === 1 ? "" : "s"} still red.`;
 }
 
+function setWorkspace(view, options = {}) {
+  const allowed = ["google-links", "aars", "accomplishments", "oplan-katok", "map"];
+  state.activeWorkspace = allowed.includes(view) ? view : "google-links";
+
+  document.querySelectorAll("[data-workspace-panel]").forEach((panel) => {
+    panel.hidden = panel.dataset.workspacePanel !== state.activeWorkspace;
+  });
+  document.querySelectorAll("#workspace-tabs [data-workspace-view]").forEach((button) => {
+    const active = button.dataset.workspaceView === state.activeWorkspace;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+
+  if (options.scroll !== false) {
+    document.querySelector("#compliance")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function initializeWorkspace() {
+  const viewer = document.querySelector("#workspace-viewer");
+  [
+    ["accomplishments", "accomplishments"],
+    ["oplan-katok", "oplan-katok"],
+    ["map", "map"],
+  ].forEach(([id, view]) => {
+    const panel = document.getElementById(id);
+    panel.classList.add("workspace-panel");
+    panel.dataset.workspacePanel = view;
+    viewer.append(panel);
+  });
+
+  const initialByHash = {
+    "#accomplishments": "accomplishments",
+    "#oplan-katok": "oplan-katok",
+    "#map": "map",
+  };
+  setWorkspace(initialByHash[window.location.hash] || "google-links", { scroll: false });
+
+  document.querySelectorAll("[data-workspace-view]").forEach((control) => {
+    control.addEventListener("click", () => setWorkspace(control.dataset.workspaceView));
+  });
+}
+
 async function updateStatus(event) {
   const button = event.currentTarget;
   const article = button.closest("[data-item-id]");
@@ -663,6 +707,7 @@ document.querySelector("#accomplishments-edit-toggle").addEventListener("click",
 document.querySelector("#accomplishments-editor").addEventListener("submit", saveAccomplishments);
 document.querySelector("input[name='activityDate']").min = localDateKey(new Date());
 
+initializeWorkspace();
 renderCompliance();
 renderCalendar();
 renderOplanKatokSummary();
