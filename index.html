@@ -17,6 +17,219 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="styles.css" />
+    <style>
+      .mobile-menu-toggle {
+        display: none;
+      }
+
+      @media (max-width: 920px) {
+        .site-header {
+          position: sticky;
+          flex-wrap: nowrap;
+          gap: 12px;
+        }
+
+        .site-header .brand {
+          min-width: 0;
+          flex: 1 1 auto;
+        }
+
+        .site-header .brand span {
+          min-width: 0;
+        }
+
+        .mobile-menu-toggle {
+          display: inline-flex;
+          flex: 0 0 46px;
+          width: 46px;
+          height: 46px;
+          padding: 0;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+          gap: 5px;
+          color: white;
+          border: 1px solid rgba(255, 255, 255, 0.3);
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.08);
+          cursor: pointer;
+          touch-action: manipulation;
+        }
+
+        .mobile-menu-toggle span {
+          display: block;
+          width: 20px;
+          height: 2px;
+          border-radius: 999px;
+          background: currentColor;
+          transition: transform 180ms ease, opacity 180ms ease;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
+          transform: translateY(7px) rotate(45deg);
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
+          opacity: 0;
+        }
+
+        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
+          transform: translateY(-7px) rotate(-45deg);
+        }
+
+        .site-header > nav {
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          max-height: calc(100vh - 76px);
+          padding: 10px 18px 16px;
+          overflow-y: auto;
+          flex-direction: column;
+          gap: 0;
+          border-bottom: 3px solid var(--gold);
+          background: rgba(7, 26, 61, 0.99);
+          box-shadow: 0 18px 30px rgba(7, 26, 61, 0.24);
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .site-header > nav.mobile-open {
+          display: flex;
+        }
+
+        .site-header > nav a {
+          display: flex;
+          min-height: 50px;
+          padding: 0 12px;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+          font-size: 0.9rem;
+          touch-action: manipulation;
+        }
+
+        .site-header > nav a:last-child {
+          border-bottom: 0;
+        }
+
+        .icon-button {
+          width: 44px;
+          height: 44px;
+          min-width: 44px;
+          touch-action: manipulation;
+        }
+
+        .workspace-tabs,
+        .campaign-switcher,
+        .focus-crime-chart {
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior-x: contain;
+        }
+
+        .workspace-tabs button,
+        .campaign-switcher button,
+        .delete-activity {
+          min-height: 44px;
+          touch-action: manipulation;
+        }
+
+        .status-card {
+          width: 100%;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .calendar-card {
+          overflow: hidden;
+        }
+
+        .calendar-toolbar {
+          gap: 10px;
+        }
+
+        .calendar-toolbar h3 {
+          min-width: 0;
+          font-size: 1rem;
+          text-align: center;
+        }
+
+        .weekdays span {
+          padding: 8px 1px;
+          font-size: 0.6rem;
+        }
+
+        .calendar-day {
+          min-height: 60px;
+          padding: 5px 4px;
+          touch-action: manipulation;
+        }
+
+        .day-number {
+          font-size: 0.75rem;
+        }
+
+        .event-dots {
+          margin-top: 7px;
+        }
+
+        .focus-crime-chart {
+          scroll-snap-type: x proximity;
+          padding-bottom: 8px;
+        }
+
+        .focus-crime-group {
+          scroll-snap-align: start;
+        }
+
+        .map-frame {
+          min-height: 360px;
+        }
+      }
+
+      @media (max-width: 420px) {
+        section {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        .site-header {
+          padding-left: 14px;
+          padding-right: 14px;
+        }
+
+        .calendar-card {
+          padding: 8px;
+        }
+
+        .calendar-day {
+          min-height: 54px;
+          padding: 4px 3px;
+        }
+
+        .weekdays span {
+          font-size: 0.54rem;
+        }
+
+        .event-dot {
+          width: 6px;
+          height: 6px;
+        }
+
+        .focus-crime-inputs {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 360px) {
+        .site-header .brand small {
+          display: none;
+        }
+
+        .site-header .brand strong {
+          font-size: 0.86rem;
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -32,7 +245,17 @@
           <small>Operation Compliance Portal</small>
         </span>
       </a>
-      <nav aria-label="Main navigation">
+      <button
+        class="mobile-menu-toggle"
+        id="mobile-menu-toggle"
+        type="button"
+        aria-label="Open navigation menu"
+        aria-controls="main-navigation"
+        aria-expanded="false"
+      >
+        <span></span><span></span><span></span>
+      </button>
+      <nav id="main-navigation" aria-label="Main navigation">
         <a href="#calendar">Calendar</a>
         <a href="#compliance" data-workspace-view="google-links">Compliance</a>
         <a href="#compliance" data-workspace-view="accomplishments">Accomplishments</a>
@@ -303,6 +526,44 @@
       <p>Public access • Shared operational monitoring</p>
     </footer>
 
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const toggle = document.getElementById("mobile-menu-toggle");
+        const navigation = document.getElementById("main-navigation");
+        if (!toggle || !navigation) return;
+
+        const closeMenu = () => {
+          navigation.classList.remove("mobile-open");
+          toggle.setAttribute("aria-expanded", "false");
+          toggle.setAttribute("aria-label", "Open navigation menu");
+        };
+
+        toggle.addEventListener("click", () => {
+          const willOpen = !navigation.classList.contains("mobile-open");
+          navigation.classList.toggle("mobile-open", willOpen);
+          toggle.setAttribute("aria-expanded", String(willOpen));
+          toggle.setAttribute("aria-label", willOpen ? "Close navigation menu" : "Open navigation menu");
+        });
+
+        navigation.addEventListener("click", (event) => {
+          if (event.target.closest("a")) closeMenu();
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeMenu();
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!navigation.classList.contains("mobile-open")) return;
+          if (navigation.contains(event.target) || toggle.contains(event.target)) return;
+          closeMenu();
+        });
+
+        window.addEventListener("resize", () => {
+          if (window.innerWidth > 920) closeMenu();
+        });
+      });
+    </script>
     <script src="app.js" defer></script>
   </body>
 </html>
