@@ -194,6 +194,20 @@ input:focus, textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px r
 .form-footer p.error { color: var(--red); }
 
 .compliance-section { background: linear-gradient(180deg, var(--background), #eef3fa); }
+.workspace-tabs { display: flex; flex-wrap: wrap; gap: 9px; margin: 0 0 24px; }
+.workspace-tabs button { min-height: 40px; padding: 0 15px; color: #56657a; background: white; border: 1px solid var(--line); border-radius: 999px; font-size: .76rem; font-weight: 750; cursor: pointer; }
+.workspace-tabs button.active { color: white; background: var(--blue); border-color: var(--blue); box-shadow: 0 7px 18px rgba(0,56,168,.18); }
+.workspace-viewer { min-height: 280px; }
+.workspace-panel[hidden] { display: none !important; }
+.workspace-panel:not([hidden]) { animation: workspace-reveal .24s ease both; }
+.workspace-empty { padding: 60px 24px; text-align: center; background: white; border: 1px dashed #bcc8d6; border-radius: 14px; }
+.workspace-empty h3 { margin: 0 0 6px; }
+.workspace-empty p:last-child { margin: 0; color: var(--muted); }
+#workspace-viewer > .accomplishments-section,
+#workspace-viewer > .map-section { margin: 0; padding: 34px; border-radius: var(--radius); }
+#workspace-viewer > .records-section { width: 100%; margin: 0; padding: 42px; border-radius: var(--radius); }
+#workspace-viewer > .map-section { background: white; border: 1px solid var(--line); }
+@keyframes workspace-reveal { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .legend { display: flex; flex-wrap: wrap; gap: 16px; color: var(--muted); font-size: .78rem; font-weight: 700; }
 .legend span { display: flex; align-items: center; gap: 6px; }
 .dot { width: 9px; height: 9px; border-radius: 50%; }
@@ -336,6 +350,12 @@ footer { display: flex; align-items: center; justify-content: space-between; gap
   .section-heading, .form-heading, .form-footer, .accomplishment-actions, .editor-intro, .editor-footer, footer { align-items: flex-start; flex-direction: column; }
   .accomplishment-actions, .accomplishment-edit-button, .editor-footer button { width: 100%; }
   .accomplishment-actions p, .editor-intro > p { text-align: left; }
+  .workspace-tabs { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+  .workspace-tabs::-webkit-scrollbar { display: none; }
+  .workspace-tabs button { flex: 0 0 auto; white-space: nowrap; }
+  #workspace-viewer > .accomplishments-section,
+  #workspace-viewer > .records-section,
+  #workspace-viewer > .map-section { padding: 24px 16px; }
   .campaign-switcher { display: flex; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
   .campaign-switcher::-webkit-scrollbar { display: none; }
   .campaign-switcher button { min-width: 190px; }
