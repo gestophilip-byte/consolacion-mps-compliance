@@ -35,6 +35,7 @@
       <nav aria-label="Main navigation">
         <a href="#calendar">Calendar</a>
         <a href="#compliance">Compliance</a>
+        <a href="#accomplishments">Accomplishments</a>
         <a href="#oplan-katok">Oplan Katok</a>
         <a href="#map">Map</a>
       </nav>
@@ -165,6 +166,34 @@
           </div>
         </div>
         <div id="compliance-list" class="compliance-list" aria-live="polite"></div>
+      </section>
+
+      <section class="accomplishments-section" id="accomplishments" aria-labelledby="accomplishments-title">
+        <div class="section-heading accomplishments-heading">
+          <div>
+            <p class="kicker">Comparative report</p>
+            <h2 id="accomplishments-title">Operational accomplishments</h2>
+          </div>
+          <div class="accomplishment-actions">
+            <p id="accomplishments-updated">Loading saved figures…</p>
+            <button class="button accomplishment-edit-button" id="accomplishments-edit-toggle" type="button">Edit figures</button>
+          </div>
+        </div>
+
+        <p id="accomplishments-message" class="accomplishments-message" role="status" aria-live="polite"></p>
+        <form id="accomplishments-editor" class="accomplishments-editor" hidden>
+          <div class="editor-intro">
+            <div><p class="kicker">Shared editor</p><h3>Update report figures</h3></div>
+            <p>Change only the values that need updating, then save once. Blank inputs display as a dash.</p>
+          </div>
+          <div id="editor-campaigns" class="editor-campaigns"></div>
+          <div class="editor-footer">
+            <span>Saving updates the charts for everyone who opens the website.</span>
+            <button class="button primary" type="submit">Save all figures</button>
+          </div>
+        </form>
+
+        <div id="campaign-grid" class="campaign-grid" aria-live="polite"></div>
       </section>
 
       <section class="records-section" id="oplan-katok" aria-labelledby="katok-title">
