@@ -1,6 +1,6 @@
 # Hourly sync of oplan-katok-summary.json from the Apps Script endpoint.
-# Requires one repository secret:
-#   KATOK_ENDPOINT = https://script.google.com/macros/s/XXXX/exec?view=katok
+# When KATOK_ENDPOINT is not configured, the workflow exits cleanly and
+# preserves the last known public aggregate totals instead of failing.
 
 name: Update Oplan Katok summary
 
@@ -8,38 +8,66 @@ on:
   schedule:
     - cron: "0 * * * *"   # every hour, on the hour (UTC)
   workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/update-oplan-katok.yml"
 
 permissions:
   contents: write
 
+concurrency:
+  group: oplan-katok-sync
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Fetch latest aggregates
+        id: fetch
+        env:
+          KATOK_ENDPOINT: ${{ secrets.KATOK_ENDPOINT }}
         run: |
-          curl -sL --fail --max-time 60 "${{ secrets.KATOK_ENDPOINT }}" -o katok-new.json
+          set -euo pipefail
 
-          # Validate before touching the live file: must be JSON with 4 numeric fields
-          for field in masterRecords individuals smallArms lightWeapons; do
-            value=$(jq -r ".${field}" katok-new.json)
-            case "$value" in
-              ''|null|*[!0-9.]*) echo "Invalid ${field}: ${value}"; exit 1 ;;
-            esac
-          done
+          if [ -z "${KATOK_ENDPOINT:-}" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Oplan Katok sync paused::KATOK_ENDPOINT is not configured. Keeping the existing oplan-katok-summary.json file."
+            {
+              echo "### Oplan Katok sync paused"
+              echo
+              echo "The repository secret \`KATOK_ENDPOINT\` is not configured, so the last saved aggregate totals were preserved."
+              echo "No protected Google Sheet data was exposed."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+          curl -sSL --fail --retry 2 --retry-delay 2 --max-time 60 "$KATOK_ENDPOINT" -o katok-new.json
+
+          # Validate before touching the live file: all 4 required fields must be JSON numbers.
+          jq -e '
+            (.masterRecords | type == "number") and
+            (.individuals  | type == "number") and
+            (.smallArms    | type == "number") and
+            (.lightWeapons | type == "number")
+          ' katok-new.json > /dev/null
 
           jq . katok-new.json > oplan-katok-summary.json
-          rm katok-new.json
+          rm -f katok-new.json
 
       - name: Commit if totals changed
+        if: steps.fetch.outputs.configured == 'true'
         run: |
+          set -euo pipefail
           git config user.name  "katok-sync-bot"
           git config user.email "actions@users.noreply.github.com"
 
-          # Ignore the syncedAt timestamp when deciding whether totals changed
+          # Ignore the syncedAt timestamp when deciding whether aggregate totals changed.
           if git show HEAD:oplan-katok-summary.json 2>/dev/null | jq 'del(.syncedAt)' > old.json; then
             jq 'del(.syncedAt)' oplan-katok-summary.json > new.json
             if cmp -s old.json new.json; then
