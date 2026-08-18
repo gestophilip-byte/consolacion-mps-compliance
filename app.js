@@ -6,6 +6,46 @@
   coreScript.src = "app-core.js";
 
   coreScript.onload = () => {
+    const SCHOOL_SECURITY_URL = "https://docs.google.com/spreadsheets/d/1ozHWBxWvAPvtRIGD7MEIiDlXAc7N1IIYupjgforTISo/edit?usp=drivesdk";
+    const PUROK_SECURITY_URL = "https://docs.google.com/spreadsheets/d/11AQOOhourpIpSZqfJhywbKk2B37JWR6qB7Vm9OgtCcQ/edit?usp=drivesdk";
+
+    // The school-security workbook was already connected under the older
+    // "Daily Actual Duty Personnel on Schools" label. Keep the same item ID so
+    // any existing automatic compliance detection continues to work, but show
+    // the workbook's official inventory title in the Google Links workspace.
+    const schoolSecurityItem = complianceItems.find((item) => item.id === "daily-duty-personnel-schools");
+    if (schoolSecurityItem) {
+      schoolSecurityItem.title = "Inventory of Security of Schools";
+      schoolSecurityItem.description = "Inventory and monitoring of security coverage and deployed personnel for schools.";
+      schoolSecurityItem.href = SCHOOL_SECURITY_URL;
+      schoolSecurityItem.frequency = "Daily / Inventory";
+    } else {
+      complianceItems.push({
+        id: "daily-duty-personnel-schools",
+        title: "Inventory of Security of Schools",
+        description: "Inventory and monitoring of security coverage and deployed personnel for schools.",
+        href: SCHOOL_SECURITY_URL,
+        frequency: "Daily / Inventory",
+      });
+      state.statuses["daily-duty-personnel-schools"] = false;
+      state.statusSources["daily-duty-personnel-schools"] = "manual-check";
+    }
+
+    const purokSecurityId = "inventory-purok-barangay-activities-fiestas-security";
+    if (!complianceItems.some((item) => item.id === purokSecurityId)) {
+      complianceItems.push({
+        id: purokSecurityId,
+        title: "Inventory on Purok, Brgy., Major Municipal/City Activity/Fiestas Provided with Security (June 25, 2026 to August 16, 2026)",
+        description: "Inventory of security provided for purok and barangay activities, major municipal/city activities, and fiestas for the covered period.",
+        href: PUROK_SECURITY_URL,
+        frequency: "Inventory",
+      });
+      state.statuses[purokSecurityId] = false;
+      state.statusSources[purokSecurityId] = "manual-check";
+    }
+
+    renderCompliance();
+
     const defaultCitationCampaign = () => ({
       id: CITATION_CAMPAIGN_ID,
       title: "Citation Monitoring",
