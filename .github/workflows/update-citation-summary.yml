@@ -35,12 +35,22 @@ jobs:
       - name: Recalculate complete workbook
         run: python scripts/update_citation_summary.py
 
-      - name: Commit if summary changed
+      - name: Commit if totals changed
         run: |
           set -euo pipefail
-          if git diff --quiet -- citation-summary.json; then
-            echo "Citation Monitoring totals are unchanged."
-            exit 0
+
+          # A fresh calculation always gets a new calculatedAt timestamp.
+          # Compare the actual totals/counts without that timestamp so the
+          # repository is not committed every 15 minutes when nothing changed.
+          if git show HEAD:citation-summary.json 2>/dev/null | jq 'del(.calculatedAt)' > old-summary.json; then
+            jq 'del(.calculatedAt)' citation-summary.json > new-summary.json
+            if cmp -s old-summary.json new-summary.json; then
+              echo "Citation Monitoring totals are unchanged."
+              git checkout -- citation-summary.json
+              rm -f old-summary.json new-summary.json
+              exit 0
+            fi
+            rm -f old-summary.json new-summary.json
           fi
 
           git config user.name "citation-sync-bot"
