@@ -1,569 +1,108 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#071a3d" />
-    <meta
-      name="description"
-      content="Public Consolacion Municipal Police Station operation compliance portal."
-    />
-    <title>Consolacion MPS Operation Compliance</title>
-    <link rel="icon" href="https://work-compliance-portal.gestophilip.chatgpt.site/consolacion-mps-logo.jpg" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@700&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="styles.css" />
-    <style>
-      .mobile-menu-toggle {
-        display: none;
-      }
-
-      @media (max-width: 920px) {
-        .site-header {
-          position: sticky;
-          flex-wrap: nowrap;
-          gap: 12px;
-        }
-
-        .site-header .brand {
-          min-width: 0;
-          flex: 1 1 auto;
-        }
-
-        .site-header .brand span {
-          min-width: 0;
-        }
-
-        .mobile-menu-toggle {
-          display: inline-flex;
-          flex: 0 0 46px;
-          width: 46px;
-          height: 46px;
-          padding: 0;
-          align-items: center;
-          justify-content: center;
-          flex-direction: column;
-          gap: 5px;
-          color: white;
-          border: 1px solid rgba(255, 255, 255, 0.3);
-          border-radius: 10px;
-          background: rgba(255, 255, 255, 0.08);
-          cursor: pointer;
-          touch-action: manipulation;
-        }
-
-        .mobile-menu-toggle span {
-          display: block;
-          width: 20px;
-          height: 2px;
-          border-radius: 999px;
-          background: currentColor;
-          transition: transform 180ms ease, opacity 180ms ease;
-        }
-
-        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(1) {
-          transform: translateY(7px) rotate(45deg);
-        }
-
-        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(2) {
-          opacity: 0;
-        }
-
-        .mobile-menu-toggle[aria-expanded="true"] span:nth-child(3) {
-          transform: translateY(-7px) rotate(-45deg);
-        }
-
-        .site-header > nav {
-          display: none;
-          position: absolute;
-          top: 100%;
-          left: 0;
-          right: 0;
-          max-height: calc(100vh - 76px);
-          padding: 10px 18px 16px;
-          overflow-y: auto;
-          flex-direction: column;
-          gap: 0;
-          border-bottom: 3px solid var(--gold);
-          background: rgba(7, 26, 61, 0.99);
-          box-shadow: 0 18px 30px rgba(7, 26, 61, 0.24);
-          -webkit-overflow-scrolling: touch;
-        }
-
-        .site-header > nav.mobile-open {
-          display: flex;
-        }
-
-        .site-header > nav a {
-          display: flex;
-          min-height: 50px;
-          padding: 0 12px;
-          align-items: center;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-          font-size: 0.9rem;
-          touch-action: manipulation;
-        }
-
-        .site-header > nav a:last-child {
-          border-bottom: 0;
-        }
-
-        .icon-button {
-          width: 44px;
-          height: 44px;
-          min-width: 44px;
-          touch-action: manipulation;
-        }
-
-        .workspace-tabs,
-        .campaign-switcher,
-        .focus-crime-chart {
-          -webkit-overflow-scrolling: touch;
-          overscroll-behavior-x: contain;
-        }
-
-        .workspace-tabs button,
-        .campaign-switcher button,
-        .delete-activity {
-          min-height: 44px;
-          touch-action: manipulation;
-        }
-
-        .status-card {
-          width: 100%;
-        }
-      }
-
-      @media (max-width: 600px) {
-        .calendar-card {
-          overflow: hidden;
-        }
-
-        .calendar-toolbar {
-          gap: 10px;
-        }
-
-        .calendar-toolbar h3 {
-          min-width: 0;
-          font-size: 1rem;
-          text-align: center;
-        }
-
-        .weekdays span {
-          padding: 8px 1px;
-          font-size: 0.6rem;
-        }
-
-        .calendar-day {
-          min-height: 60px;
-          padding: 5px 4px;
-          touch-action: manipulation;
-        }
-
-        .day-number {
-          font-size: 0.75rem;
-        }
-
-        .event-dots {
-          margin-top: 7px;
-        }
-
-        .focus-crime-chart {
-          scroll-snap-type: x proximity;
-          padding-bottom: 8px;
-        }
-
-        .focus-crime-group {
-          scroll-snap-align: start;
-        }
-
-        .map-frame {
-          min-height: 360px;
-        }
-      }
-
-      @media (max-width: 420px) {
-        section {
-          padding-left: 14px;
-          padding-right: 14px;
-        }
-
-        .site-header {
-          padding-left: 14px;
-          padding-right: 14px;
-        }
-
-        .calendar-card {
-          padding: 8px;
-        }
-
-        .calendar-day {
-          min-height: 54px;
-          padding: 4px 3px;
-        }
-
-        .weekdays span {
-          font-size: 0.54rem;
-        }
-
-        .event-dot {
-          width: 6px;
-          height: 6px;
-        }
-
-        .focus-crime-inputs {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      @media (max-width: 360px) {
-        .site-header .brand small {
-          display: none;
-        }
-
-        .site-header .brand strong {
-          font-size: 0.86rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="#overview" aria-label="Consolacion MPS home">
-        <img
-          src="https://work-compliance-portal.gestophilip.chatgpt.site/consolacion-mps-logo.jpg"
-          alt="Consolacion Police Station logo"
-          width="58"
-          height="72"
-        />
-        <span>
-          <strong>Consolacion MPS</strong>
-          <small>Operation Compliance Portal</small>
-        </span>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#071a3d" />
+  <meta name="description" content="Consolacion Municipal Police Station operations command and compliance center." />
+  <title>Consolacion MPS Operations Command Center</title>
+  <link rel="icon" href="https://work-compliance-portal.gestophilip.chatgpt.site/consolacion-mps-logo.jpg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="command-shell">
+    <aside class="command-sidebar" id="command-sidebar" aria-label="Command navigation">
+      <a class="sidebar-brand" href="#overview" data-command-page="overview" aria-label="Consolacion MPS command center home">
+        <span class="sidebar-logo-wrap"><img src="https://work-compliance-portal.gestophilip.chatgpt.site/consolacion-mps-logo.jpg" alt="Consolacion Police Station logo" width="52" height="64" /></span>
+        <span class="sidebar-brand-copy"><strong>Consolacion MPS</strong><small>Operations Command Center</small></span>
       </a>
-      <button
-        class="mobile-menu-toggle"
-        id="mobile-menu-toggle"
-        type="button"
-        aria-label="Open navigation menu"
-        aria-controls="main-navigation"
-        aria-expanded="false"
-      >
-        <span></span><span></span><span></span>
-      </button>
-      <nav id="main-navigation" aria-label="Main navigation">
-        <a href="#calendar">Calendar</a>
-        <a href="#compliance" data-workspace-view="google-links">Compliance</a>
-        <a href="#compliance" data-workspace-view="accomplishments">Accomplishments</a>
-        <a href="#compliance" data-workspace-view="focus-crime">8 Focus Crime</a>
-        <a href="#compliance" data-workspace-view="oplan-katok">Oplan Katok</a>
-        <a href="#compliance" data-workspace-view="map">Map</a>
+      <nav class="command-nav" id="main-navigation">
+        <p>Command</p>
+        <a class="active" href="#overview" data-command-page="overview"><span class="nav-icon">⌂</span><span>Overview</span></a>
+        <a href="#compliance" data-command-page="compliance" data-command-workspace="google-links"><span class="nav-icon">✓</span><span>Compliance</span></a>
+        <a href="#calendar" data-command-page="calendar"><span class="nav-icon">▦</span><span>Calendar</span></a>
+        <p>Reports</p>
+        <a href="#accomplishments" data-command-page="compliance" data-command-workspace="accomplishments"><span class="nav-icon">▥</span><span>Accomplishments</span></a>
+        <a href="#focus-crime" data-command-page="compliance" data-command-workspace="focus-crime"><span class="nav-icon">8</span><span>8 Focus Crime</span></a>
+        <a href="#citation-monitoring" data-command-page="compliance" data-command-workspace="accomplishments" data-command-campaign="citation-monitoring"><span class="nav-icon">#</span><span>Citation Monitoring</span></a>
+        <a href="#oplan-katok" data-command-page="compliance" data-command-workspace="oplan-katok"><span class="nav-icon">◎</span><span>Oplan Katok</span></a>
+        <a href="#aars" data-command-page="compliance" data-command-workspace="aars"><span class="nav-icon">A</span><span>AAR</span></a>
+        <a href="#map" data-command-page="compliance" data-command-workspace="map"><span class="nav-icon">⌖</span><span>Google Map</span></a>
       </nav>
-    </header>
-
-    <main>
-      <section class="hero" id="overview">
-        <div class="hero-copy">
-          <p class="eyebrow"><span></span> Public Operations Dashboard</p>
-          <h1>Consolacion MPS<br /><em>Operation Compliance</em></h1>
-          <p class="hero-intro">
-            One public workspace for daily monitoring, activity notices, operational
-            records, and map compliance.
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#compliance">View compliance</a>
-            <a class="button secondary" href="#activity-form">Add an activity</a>
-          </div>
+      <div class="sidebar-foot"><span class="system-dot"></span><div><strong>Public Dashboard</strong><small>Shared operational monitoring</small></div></div>
+    </aside>
+    <div class="sidebar-scrim" id="sidebar-scrim" hidden></div>
+    <div class="command-main">
+      <header class="command-topbar">
+        <div class="topbar-left">
+          <button class="mobile-menu-toggle" id="mobile-menu-toggle" type="button" aria-label="Open navigation menu" aria-controls="command-sidebar" aria-expanded="false"><span></span><span></span><span></span></button>
+          <div><h1 id="command-page-title">Operations Command &amp; Compliance Center</h1><time id="date-label">Philippine time</time></div>
         </div>
-        <aside class="status-card" aria-label="Today's compliance summary">
-          <p>Today’s progress</p>
-          <strong id="summary-count">— / 12</strong>
-          <div class="progress-track" aria-hidden="true">
-            <span id="summary-progress"></span>
+        <div class="system-status"><span></span>System Online</div>
+      </header>
+      <main class="command-content">
+        <section class="command-page overview-page" id="overview" data-command-page-panel="overview">
+          <div class="page-intro">
+            <div><p class="eyebrow">Operational Situation Overview</p><h2>Good morning, Consolacion MPS</h2><p>Priority compliance, operational data, activities, and monitoring in one workspace.</p></div>
+            <button class="attention-button" id="attention-action" type="button">Loading compliance…</button>
           </div>
-          <small id="summary-label">Loading shared status…</small>
-          <time id="date-label"></time>
-        </aside>
-      </section>
-
-      <section class="notice-section" aria-labelledby="notice-title">
-        <div class="section-heading compact">
-          <div>
-            <p class="kicker">Advance notice</p>
-            <h2 id="notice-title">Activities happening tomorrow</h2>
+          <div class="overview-kpis">
+            <article class="kpi-card compliance-kpi"><span class="kpi-label">Compliance</span><strong id="summary-count">— / 13</strong><span id="summary-label">Loading shared status…</span><div class="progress-track"><i id="summary-progress"></i></div></article>
+            <article class="kpi-card"><span class="kpi-label">Pending</span><strong id="overview-pending">—</strong><span>Requirements requiring action</span></article>
+            <article class="kpi-card"><span class="kpi-label">Total Citations</span><strong id="overview-citations">—</strong><span>Verified workbook total</span></article>
+            <article class="kpi-card"><span class="kpi-label">Estimated Fines</span><strong id="overview-fines">—</strong><span>Citation Monitoring</span></article>
+            <article class="kpi-card"><span class="kpi-label">Oplan Katok</span><strong id="overview-katok">—</strong><span>Master records</span></article>
           </div>
-          <span class="notice-badge">1 day before</span>
-        </div>
-        <div id="notice-list" class="notice-list" aria-live="polite">
-          <p class="empty-state">Loading activity notices…</p>
-        </div>
-      </section>
-
-      <section class="calendar-section" id="calendar" aria-labelledby="calendar-title">
-        <div class="section-heading">
-          <div>
-            <p class="kicker">Shared activity planner</p>
-            <h2 id="calendar-title">Operations calendar</h2>
-            <p>Anyone with this website can add an activity. Saved entries appear for everyone.</p>
+          <div class="overview-grid">
+            <article class="dashboard-card attention-card">
+              <div class="dashboard-card-heading"><div><p class="kicker">Action center</p><h3>Attention Required</h3></div><button class="text-button" type="button" data-open-pending>Open pending</button></div>
+              <div id="overview-attention-list" class="attention-list"><p class="empty-state">Loading compliance priorities…</p></div>
+            </article>
+            <article class="dashboard-card notice-dashboard-card">
+              <div class="dashboard-card-heading"><div><p class="kicker">Advance notice</p><h3>Activities Tomorrow</h3></div><span class="notice-badge">1 day before</span></div>
+              <div id="notice-list" class="notice-list" aria-live="polite"><p class="empty-state">Loading activity notices…</p></div>
+            </article>
           </div>
-        </div>
-
-        <div class="calendar-layout">
-          <div class="calendar-card">
-            <div class="calendar-toolbar">
-              <button class="icon-button" id="previous-month" type="button" aria-label="Previous month">←</button>
-              <h3 id="calendar-month">Month</h3>
-              <button class="icon-button" id="next-month" type="button" aria-label="Next month">→</button>
-            </div>
-            <div class="weekdays" aria-hidden="true">
-              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span>
-              <span>Thu</span><span>Fri</span><span>Sat</span>
-            </div>
-            <div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Activity calendar"></div>
+          <div class="overview-grid lower-grid">
+            <article class="dashboard-card quick-report-card">
+              <div class="dashboard-card-heading"><div><p class="kicker">Verified operational data</p><h3>Citation Monitoring</h3></div><button class="text-button" type="button" data-command-jump="citation-monitoring">Open report</button></div>
+              <div class="quick-metric-grid"><div><small>Total Citations</small><strong id="overview-citations-detail">—</strong><span>Complete workbook</span></div><div><small>Estimated Fines</small><strong id="overview-fines-detail">—</strong><span>PHP</span></div><div><small>Verification</small><strong class="verified-text">Verified</strong><span>Scheduled workbook summary</span></div></div>
+            </article>
+            <article class="dashboard-card quick-report-card">
+              <div class="dashboard-card-heading"><div><p class="kicker">Operational record</p><h3>Oplan Katok</h3></div><button class="text-button" type="button" data-command-jump="oplan-katok">Open monitoring</button></div>
+              <div class="mini-katok-grid"><div><strong id="overview-katok-master">357</strong><small>Master Records</small></div><div><strong id="overview-katok-individuals">237</strong><small>Individuals</small></div><div><strong id="overview-katok-arms">326</strong><small>Small Arms</small></div><div><strong id="overview-katok-weapons">17</strong><small>Light Weapons</small></div></div>
+              <p class="privacy-note">Aggregate totals only. Protected personal records remain in the authorized Google Sheet.</p>
+            </article>
           </div>
-
-          <aside class="upcoming-card">
-            <div class="card-title-row">
-              <div>
-                <p class="kicker">Schedule</p>
-                <h3>Upcoming activities</h3>
-              </div>
-              <span id="activity-count" class="count-pill">0</span>
-            </div>
-            <div id="upcoming-list" class="upcoming-list">
-              <p class="empty-state">Loading activities…</p>
-            </div>
-          </aside>
-        </div>
-
-        <form id="activity-form" class="activity-form">
-          <div class="form-heading">
-            <div>
-              <p class="kicker">Public entry</p>
-              <h3>Add an activity</h3>
-            </div>
-            <p>Complete the required title and date fields.</p>
+        </section>
+        <section class="command-page calendar-section" id="calendar" data-command-page-panel="calendar" hidden aria-labelledby="calendar-title">
+          <div class="page-section-heading"><div><p class="kicker">Shared activity planner</p><h2 id="calendar-title">Operations Calendar</h2><p>Anyone with this website can add an activity. Saved entries appear for everyone.</p></div></div>
+          <div class="calendar-layout">
+            <div class="calendar-card"><div class="calendar-toolbar"><button class="icon-button" id="previous-month" type="button" aria-label="Previous month">←</button><h3 id="calendar-month">Month</h3><button class="icon-button" id="next-month" type="button" aria-label="Next month">→</button></div><div class="weekdays" aria-hidden="true"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div><div id="calendar-grid" class="calendar-grid" role="grid" aria-label="Activity calendar"></div></div>
+            <aside class="upcoming-card"><div class="card-title-row"><div><p class="kicker">Schedule</p><h3>Upcoming Activities</h3></div><span id="activity-count" class="count-pill">0</span></div><div id="upcoming-list" class="upcoming-list"><p class="empty-state">Loading activities…</p></div></aside>
           </div>
-          <div class="form-grid">
-            <label class="wide">
-              Activity title <span aria-hidden="true">*</span>
-              <input name="title" maxlength="120" required placeholder="e.g. Barangay coordination meeting" />
-            </label>
-            <label>
-              Date <span aria-hidden="true">*</span>
-              <input name="activityDate" type="date" required />
-            </label>
-            <label>
-              Time
-              <input name="activityTime" type="time" />
-            </label>
-            <label class="wide">
-              Location
-              <input name="location" maxlength="180" placeholder="Activity location" />
-            </label>
-            <label class="full">
-              Details
-              <textarea name="details" maxlength="1000" rows="4" placeholder="Purpose, participants, reminders, or other details"></textarea>
-            </label>
+          <form id="activity-form" class="activity-form"><div class="form-heading"><div><p class="kicker">Public entry</p><h3>Add an Activity</h3></div><p>Complete the required title and date fields.</p></div><div class="form-grid"><label class="wide">Activity title <span aria-hidden="true">*</span><input name="title" maxlength="120" required placeholder="e.g. Barangay coordination meeting" /></label><label>Date <span aria-hidden="true">*</span><input name="activityDate" type="date" required /></label><label>Time<input name="activityTime" type="time" /></label><label class="wide">Location<input name="location" maxlength="180" placeholder="Activity location" /></label><label class="full">Details<textarea name="details" maxlength="1000" rows="4" placeholder="Purpose, participants, reminders, or other details"></textarea></label></div><div class="form-footer"><p id="form-message" role="status" aria-live="polite"></p><button class="button primary" type="submit">Save public activity</button></div></form>
+        </section>
+        <section class="command-page compliance-section" id="compliance" data-command-page-panel="compliance" hidden aria-labelledby="compliance-title">
+          <div class="page-section-heading compliance-heading"><div><p class="kicker">Daily and weekly requirements</p><h2 id="compliance-title">Compliance Workspaces</h2><p>Open each Google workspace and finish the current Consolacion entry. Supported sheets turn green automatically.</p></div><div class="legend"><span><i class="dot red"></i>Not complied</span><span><i class="dot green"></i>Complied</span><span>Sheets rechecked every 2 minutes</span></div></div>
+          <div class="workspace-tabs" id="workspace-tabs" role="tablist" aria-label="Choose portal content"><button class="active" type="button" role="tab" aria-selected="true" data-workspace-view="google-links">Google Links</button><button type="button" role="tab" aria-selected="false" data-workspace-view="aars">AARs</button><button type="button" role="tab" aria-selected="false" data-workspace-view="accomplishments">Accomplishments</button><button type="button" role="tab" aria-selected="false" data-workspace-view="focus-crime">8 Focus Crime</button><button type="button" role="tab" aria-selected="false" data-workspace-view="oplan-katok">Oplan Katok</button><button type="button" role="tab" aria-selected="false" data-workspace-view="map">Google Map</button></div>
+          <div id="workspace-viewer" class="workspace-viewer" aria-live="polite">
+            <div id="google-links-panel" class="workspace-panel" data-workspace-panel="google-links"><div class="workspace-toolbar"><div class="compliance-filters" role="group" aria-label="Filter compliance requirements"><button class="active" type="button" data-compliance-filter="all">All</button><button type="button" data-compliance-filter="pending">Pending</button><button type="button" data-compliance-filter="complied">Complied</button><button type="button" data-compliance-filter="daily">Daily</button><button type="button" data-compliance-filter="weekly">Weekly</button></div><div class="report-date-host" data-report-date-key="googleLinks"></div></div><div class="compliance-table-head"><span>Requirement</span><span>Source / Frequency</span><span>Status</span></div><div id="compliance-list" class="compliance-list"></div></div>
+            <div id="aars-panel" class="workspace-panel workspace-empty" data-workspace-panel="aars" hidden><div class="report-date-host" data-report-date-key="aars"></div><p class="kicker">After-activity reports</p><h3>AAR Workspace</h3><p>Send the AAR links or documents and they can be added here.</p></div>
           </div>
-          <div class="form-footer">
-            <p id="form-message" role="status" aria-live="polite"></p>
-            <button class="button primary" type="submit">Save public activity</button>
-          </div>
-        </form>
-      </section>
-
-      <section class="compliance-section" id="compliance" aria-labelledby="compliance-title">
-        <div class="section-heading">
-          <div>
-            <p class="kicker">Daily and weekly requirements</p>
-            <h2 id="compliance-title">Compliance workspaces</h2>
-            <p>Open each Google workspace and finish today’s Consolacion entry. Supported sheets turn green automatically.</p>
-          </div>
-          <div class="legend" aria-label="Status legend">
-            <span><i class="dot red"></i>Not complied</span>
-            <span><i class="dot green"></i>Complied</span>
-            <span>Sheets rechecked every 2 minutes</span>
-          </div>
-        </div>
-        <div id="workspace-tabs" class="workspace-tabs" role="tablist" aria-label="Choose portal content">
-          <button class="active" type="button" role="tab" aria-selected="true" data-workspace-view="google-links">Google Links</button>
-          <button type="button" role="tab" aria-selected="false" data-workspace-view="aars">AARs</button>
-          <button type="button" role="tab" aria-selected="false" data-workspace-view="accomplishments">Accomplishments</button>
-          <button type="button" role="tab" aria-selected="false" data-workspace-view="focus-crime">8 Focus Crime</button>
-          <button type="button" role="tab" aria-selected="false" data-workspace-view="oplan-katok">Oplan Katok</button>
-          <button type="button" role="tab" aria-selected="false" data-workspace-view="map">Google Map</button>
-        </div>
-        <div id="workspace-viewer" class="workspace-viewer" aria-live="polite">
-          <div id="google-links-panel" class="workspace-panel" data-workspace-panel="google-links">
-            <div class="report-date-host" data-report-date-key="googleLinks"></div>
-            <div id="compliance-list" class="compliance-list"></div>
-          </div>
-          <div id="aars-panel" class="workspace-panel workspace-empty" data-workspace-panel="aars" hidden>
-            <div class="report-date-host" data-report-date-key="aars"></div>
-            <p class="kicker">After-activity reports</p>
-            <h3>AAR workspace</h3>
-            <p>Send the AAR links or documents and they can be added here.</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="accomplishments-section" id="accomplishments" aria-labelledby="accomplishments-title">
-        <div class="section-heading accomplishments-heading">
-          <div>
-            <p class="kicker">Comparative report</p>
-            <h2 id="accomplishments-title">Operational accomplishments</h2>
-          </div>
-          <div class="accomplishment-actions">
-            <p id="accomplishments-updated">Loading saved figures…</p>
-            <button class="button accomplishment-edit-button" id="accomplishments-edit-toggle" type="button">Edit figures</button>
-          </div>
-        </div>
-
-        <p id="accomplishments-message" class="accomplishments-message" role="status" aria-live="polite"></p>
-        <div id="campaign-switcher" class="campaign-switcher" role="tablist" aria-label="Choose an accomplishment report"></div>
-        <form id="accomplishments-editor" class="accomplishments-editor" hidden>
-          <div class="editor-intro">
-            <div><p class="kicker">Shared editor</p><h3>Update report figures</h3></div>
-            <p>Change only the values that need updating, then save once. Blank inputs display as a dash.</p>
-          </div>
-          <div id="editor-campaigns" class="editor-campaigns"></div>
-          <div class="editor-footer">
-            <span>Saving updates the charts for everyone who opens the website.</span>
-            <button class="button primary" type="submit">Save all figures</button>
-          </div>
-        </form>
-
-        <div id="campaign-grid" class="campaign-grid single-campaign" aria-live="polite" role="tabpanel"></div>
-      </section>
-
-      <section class="focus-crime-section" id="focus-crime" aria-labelledby="focus-crime-title">
-        <div class="section-heading focus-crime-heading">
-          <div><p class="kicker">Crime monitoring</p><h2 id="focus-crime-title">8 Focus Crime</h2></div>
-          <button class="button focus-crime-edit" id="focus-crime-edit-toggle" type="button">Edit figures</button>
-        </div>
-        <p id="focus-crime-message" class="accomplishments-message" role="status" aria-live="polite"></p>
-        <form id="focus-crime-editor" class="focus-crime-editor" hidden>
-          <div><p class="kicker">Shared editor</p><h3>Update focus-crime figures</h3><p>Change the figures that need updating, then save once.</p></div>
-          <div id="focus-crime-date-inputs" class="focus-crime-date-inputs"></div>
-          <div id="focus-crime-inputs" class="focus-crime-inputs"></div>
-          <button class="button primary" type="submit">Save 8 Focus Crime figures</button>
-        </form>
-        <article class="focus-crime-card">
-          <div id="focus-crime-dates" class="inline-report-dates"></div>
-          <div id="focus-crime-chart" class="focus-crime-chart" role="img" aria-label="8 Focus Crime totals"></div>
-          <div id="focus-crime-legend" class="focus-crime-legend"></div>
-        </article>
-      </section>
-
-      <section class="records-section" id="oplan-katok" aria-labelledby="katok-title">
-        <div class="records-copy">
-          <p class="kicker">Operational record</p>
-          <h2 id="katok-title">Oplan Katok monitoring</h2>
-          <p>
-            Protected operational data remains in its Google Sheet. This public page shows
-            aggregate totals only and does not expose personal record details.
-          </p>
-          <div class="report-date-host" data-report-date-key="oplanKatok"></div>
-          <a
-            class="button primary"
-            href="https://docs.google.com/spreadsheets/d/1Wlt_lA9_i74-z4zMz8fn-sj3V1OnwsYsewMRv9gLkSo/edit"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Open authorized Google Sheet ↗</a>
-        </div>
-        <div class="metric-grid">
-          <article><strong id="katok-master-records">357</strong><span>Master records</span></article>
-          <article><strong id="katok-individuals">237</strong><span>Individuals</span></article>
-          <article><strong id="katok-small-arms">326</strong><span>Small arms</span></article>
-          <article><strong id="katok-light-weapons">17</strong><span>Light weapons</span></article>
-        </div>
-        <p id="katok-sync-status" class="katok-sync-status" aria-live="polite">
-          Automatically synced from the private Google Sheet every hour. Aggregate totals only.
-        </p>
-      </section>
-
-      <section class="map-section" id="map" aria-labelledby="map-title">
-        <div class="section-heading">
-          <div>
-            <p class="kicker">Geographic monitoring</p>
-            <h2 id="map-title">Google Map compliance</h2>
-            <p>Use the interactive map to review shared markers and operational coverage.</p>
-          </div>
-          <a
-            class="text-link"
-            href="https://www.google.com/maps/d/u/0/viewer?mid=1be_NyIRa0t8fZpfgSaZi2MFhPi5Zxq4"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Open full map ↗</a>
-        </div>
-        <div class="report-date-host" data-report-date-key="googleMap"></div>
-        <div class="map-frame">
-          <iframe
-            src="https://www.google.com/maps/d/embed?mid=1be_NyIRa0t8fZpfgSaZi2MFhPi5Zxq4&ehbc=2E312F"
-            title="Consolacion MPS Google Map compliance"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      <div class="footer-brand">
-        <img
-          src="https://work-compliance-portal.gestophilip.chatgpt.site/consolacion-mps-logo.jpg"
-          alt=""
-          width="40"
-          height="50"
-        />
-        <p><strong>Consolacion Municipal Police Station</strong><br />Operation Compliance Portal</p>
-      </div>
-      <p>Public access • Shared operational monitoring</p>
-    </footer>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const toggle = document.getElementById("mobile-menu-toggle");
-        const navigation = document.getElementById("main-navigation");
-        if (!toggle || !navigation) return;
-
-        const closeMenu = () => {
-          navigation.classList.remove("mobile-open");
-          toggle.setAttribute("aria-expanded", "false");
-          toggle.setAttribute("aria-label", "Open navigation menu");
-        };
-
-        toggle.addEventListener("click", () => {
-          const willOpen = !navigation.classList.contains("mobile-open");
-          navigation.classList.toggle("mobile-open", willOpen);
-          toggle.setAttribute("aria-expanded", String(willOpen));
-          toggle.setAttribute("aria-label", willOpen ? "Close navigation menu" : "Open navigation menu");
-        });
-
-        navigation.addEventListener("click", (event) => {
-          if (event.target.closest("a")) closeMenu();
-        });
-
-        document.addEventListener("keydown", (event) => {
-          if (event.key === "Escape") closeMenu();
-        });
-
-        document.addEventListener("click", (event) => {
-          if (!navigation.classList.contains("mobile-open")) return;
-          if (navigation.contains(event.target) || toggle.contains(event.target)) return;
-          closeMenu();
-        });
-
-        window.addEventListener("resize", () => {
-          if (window.innerWidth > 920) closeMenu();
-        });
-      });
-    </script>
-    <script src="app.js" defer></script>
-  </body>
+        </section>
+        <section class="accomplishments-section" id="accomplishments" aria-labelledby="accomplishments-title"><div class="page-section-heading accomplishments-heading"><div><p class="kicker">Comparative report</p><h2 id="accomplishments-title">Operational Accomplishments</h2></div><div class="accomplishment-actions"><p id="accomplishments-updated">Loading saved figures…</p><button class="button outline" id="accomplishments-edit-toggle" type="button">Edit figures</button></div></div><p id="accomplishments-message" class="accomplishments-message" role="status" aria-live="polite"></p><div id="campaign-switcher" class="campaign-switcher" role="tablist" aria-label="Choose an accomplishment report"></div><form id="accomplishments-editor" class="accomplishments-editor" hidden><div class="editor-intro"><div><p class="kicker">Shared editor</p><h3>Update report figures</h3></div><p>Change only the values that need updating, then save once. Blank inputs display as a dash.</p></div><div id="editor-campaigns" class="editor-campaigns"></div><div class="editor-footer"><span>Saving updates the charts for everyone who opens the website.</span><button class="button primary" type="submit">Save all figures</button></div></form><div id="campaign-grid" class="campaign-grid single-campaign" aria-live="polite" role="tabpanel"></div></section>
+        <section class="focus-crime-section" id="focus-crime" aria-labelledby="focus-crime-title"><div class="page-section-heading focus-crime-heading"><div><p class="kicker">Crime monitoring</p><h2 id="focus-crime-title">8 Focus Crime</h2></div><button class="button outline" id="focus-crime-edit-toggle" type="button">Edit figures</button></div><p id="focus-crime-message" class="accomplishments-message" role="status" aria-live="polite"></p><form id="focus-crime-editor" class="focus-crime-editor" hidden><div><p class="kicker">Shared editor</p><h3>Update focus-crime figures</h3><p>Change the figures that need updating, then save once.</p></div><div id="focus-crime-date-inputs" class="focus-crime-date-inputs"></div><div id="focus-crime-inputs" class="focus-crime-inputs"></div><button class="button primary" type="submit">Save 8 Focus Crime figures</button></form><article class="focus-crime-card"><div id="focus-crime-dates" class="inline-report-dates"></div><div id="focus-crime-chart" class="focus-crime-chart" role="img" aria-label="8 Focus Crime totals"></div><div id="focus-crime-legend" class="focus-crime-legend"></div></article></section>
+        <section class="records-section" id="oplan-katok" aria-labelledby="katok-title"><div class="records-copy"><p class="kicker">Operational record</p><h2 id="katok-title">Oplan Katok Monitoring</h2><p>Protected operational data remains in its Google Sheet. This public page shows aggregate totals only and does not expose personal record details.</p><div class="report-date-host" data-report-date-key="oplanKatok"></div><a class="button primary" href="https://docs.google.com/spreadsheets/d/1Wlt_lA9_i74-z4zMz8fn-sj3V1OnwsYsewMRv9gLkSo/edit" target="_blank" rel="noopener noreferrer">Open authorized Google Sheet ↗</a></div><div class="metric-grid"><article><strong id="katok-master-records">357</strong><span>Master records</span></article><article><strong id="katok-individuals">237</strong><span>Individuals</span></article><article><strong id="katok-small-arms">326</strong><span>Small arms</span></article><article><strong id="katok-light-weapons">17</strong><span>Light weapons</span></article></div><p id="katok-sync-status" class="katok-sync-status" aria-live="polite">Automatically synced from the private Google Sheet every hour. Aggregate totals only.</p></section>
+        <section class="map-section" id="map" aria-labelledby="map-title"><div class="page-section-heading"><div><p class="kicker">Geographic monitoring</p><h2 id="map-title">Google Map Compliance</h2><p>Use the interactive map to review shared markers and operational coverage.</p></div><a class="text-link" href="https://www.google.com/maps/d/u/0/viewer?mid=1be_NyIRa0t8fZpfgSaZi2MFhPi5Zxq4" target="_blank" rel="noopener noreferrer">Open full map ↗</a></div><div class="report-date-host" data-report-date-key="googleMap"></div><div class="map-frame"><iframe src="https://www.google.com/maps/d/embed?mid=1be_NyIRa0t8fZpfgSaZi2MFhPi5Zxq4&ehbc=2E312F" title="Consolacion MPS Google Map compliance" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></section>
+      </main>
+      <footer class="command-footer"><span>Consolacion Municipal Police Station</span><span>Operations Command &amp; Compliance Center</span></footer>
+    </div>
+  </div>
+  <script src="app.js" defer></script>
+  <script src="citation-auto.js" defer></script>
+</body>
 </html>
