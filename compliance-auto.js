@@ -2,9 +2,21 @@
   const SUMMARY_URL = "compliance-summary.json";
   const POLL_INTERVAL = 2 * 60 * 1000;
   const CACHE_KEY = "consolacion-mps-verified-compliance-summary-v1";
+  const REMOVED_COMPLIANCE_ID = "daily-patrol-operations-report";
 
   let verifiedSummary = null;
   let installed = false;
+
+  function removeLockedComplianceItem() {
+    if (typeof complianceItems !== "undefined") {
+      const index = complianceItems.findIndex((item) => item.id === REMOVED_COMPLIANCE_ID);
+      if (index >= 0) complianceItems.splice(index, 1);
+    }
+    if (typeof state !== "undefined") {
+      if (state.statuses) delete state.statuses[REMOVED_COMPLIANCE_ID];
+      if (state.statusSources) delete state.statusSources[REMOVED_COMPLIANCE_ID];
+    }
+  }
 
   function philippineDateKey() {
     const parts = new Intl.DateTimeFormat("en-CA", {
@@ -32,6 +44,7 @@
   }
 
   function applyVerifiedSummary() {
+    removeLockedComplianceItem();
     if (!summaryIsForToday(verifiedSummary)) return false;
     if (typeof state === "undefined" || typeof complianceItems === "undefined") return false;
 
@@ -129,8 +142,11 @@
     if (installed) return;
     installed = true;
 
+    removeLockedComplianceItem();
+
     const originalRenderCompliance = renderCompliance;
     renderCompliance = function renderWithVerifiedGoogleSheetStatus() {
+      removeLockedComplianceItem();
       applyVerifiedSummary();
       const result = originalRenderCompliance();
       updateVerificationNotes();
@@ -138,6 +154,7 @@
       return result;
     };
 
+    renderCompliance();
     restoreCache();
     if (applyVerifiedSummary()) renderCompliance();
     refreshVerifiedSummary();
