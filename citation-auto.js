@@ -96,6 +96,35 @@
       </a>`;
   }
 
+  function installCorsSafeRequest() {
+    if (typeof request !== "function") return;
+
+    request = async function corsSafeRequest(path, options = {}) {
+      const method = String(options.method || "GET").toUpperCase();
+      const headers = { ...(options.headers || {}) };
+      const hasContentType = Object.keys(headers).some(
+        (key) => key.toLowerCase() === "content-type",
+      );
+
+      // GET/HEAD requests remain "simple" CORS requests. JSON Content-Type is
+      // added only when a request actually sends a body.
+      if (options.body !== undefined && options.body !== null && !hasContentType) {
+        headers["Content-Type"] = "application/json";
+      }
+
+      const response = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        method,
+        headers,
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "The shared service is temporarily unavailable.");
+      }
+      return data;
+    };
+  }
+
   function restoreCachedComplianceStatus() {
     try {
       const cached = JSON.parse(localStorage.getItem(STATUS_CACHE_KEY) || "null");
@@ -115,10 +144,8 @@
 
   async function refreshComplianceStatus() {
     try {
-      // Use a simple GET with no custom Content-Type header. This avoids a
-      // cross-origin preflight that can leave the redesigned dashboard showing
-      // the all-false initialization state (0 / 13) even though saved statuses
-      // still exist on the shared status service.
+      // Direct simple GET as an extra safeguard for the most important live
+      // dashboard state. No custom Content-Type header means no preflight.
       const response = await fetch(`${API_BASE}/api/status?ts=${Date.now()}`, {
         method: "GET",
         cache: "no-store",
@@ -177,6 +204,8 @@
     if (installed) return;
     installed = true;
 
+    installCorsSafeRequest();
+
     const originalRenderAccomplishments = renderAccomplishments;
     renderAccomplishments = function renderWithVerifiedCitationSummary() {
       applySummary();
@@ -197,6 +226,14 @@
     restoreCachedComplianceStatus();
     refreshComplianceStatus();
     refreshSummary();
+
+    // The core app may have attempted these reads before the CORS-safe request
+    // wrapper was installed. Retry them now so Calendar, Accomplishments, and
+    // the date/status labels recover without requiring another page reload.
+    if (typeof loadStatuses === "function") loadStatuses();
+    if (typeof loadActivities === "function") loadActivities();
+    if (typeof loadAccomplishments === "function") loadAccomplishments();
+
     window.setInterval(refreshComplianceStatus, STATUS_POLL_INTERVAL);
     window.setInterval(refreshSummary, POLL_INTERVAL);
   }
