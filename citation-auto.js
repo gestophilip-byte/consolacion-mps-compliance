@@ -106,8 +106,6 @@
         (key) => key.toLowerCase() === "content-type",
       );
 
-      // GET/HEAD requests remain "simple" CORS requests. JSON Content-Type is
-      // added only when a request actually sends a body.
       if (options.body !== undefined && options.body !== null && !hasContentType) {
         headers["Content-Type"] = "application/json";
       }
@@ -144,8 +142,6 @@
 
   async function refreshComplianceStatus() {
     try {
-      // Direct simple GET as an extra safeguard for the most important live
-      // dashboard state. No custom Content-Type header means no preflight.
       const response = await fetch(`${API_BASE}/api/status?ts=${Date.now()}`, {
         method: "GET",
         cache: "no-store",
@@ -227,9 +223,6 @@
     refreshComplianceStatus();
     refreshSummary();
 
-    // The core app may have attempted these reads before the CORS-safe request
-    // wrapper was installed. Retry them now so Calendar, Accomplishments, and
-    // the date/status labels recover without requiring another page reload.
     if (typeof loadStatuses === "function") loadStatuses();
     if (typeof loadActivities === "function") loadActivities();
     if (typeof loadAccomplishments === "function") loadAccomplishments();
@@ -249,6 +242,11 @@
     }
     install();
   }
+
+  const verifiedComplianceScript = document.createElement("script");
+  verifiedComplianceScript.src = `compliance-auto.js?v=${Date.now()}`;
+  verifiedComplianceScript.async = true;
+  document.head.appendChild(verifiedComplianceScript);
 
   waitForApp();
 })();
