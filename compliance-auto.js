@@ -43,6 +43,143 @@
     return isValidSummary(summary) && summary.dateKey === philippineDateKey();
   }
 
+  function complianceGroups() {
+    if (typeof complianceItems === "undefined") return { daily: [], weekly: [] };
+
+    const daily = complianceItems.filter((item) =>
+      String(item.frequency || "").toLowerCase().includes("daily")
+    );
+
+    const dailyIds = new Set(daily.map((item) => item.id));
+    const weekly = complianceItems.filter((item) => !dailyIds.has(item.id));
+    return { daily, weekly };
+  }
+
+  function completedCount(items) {
+    return items.filter((item) => Boolean(state.statuses?.[item.id])).length;
+  }
+
+  function ensureSplitOverviewCards() {
+    const summaryNode = document.querySelector("#summary-count");
+    const dailyCard = summaryNode?.closest(".kpi-card");
+    if (dailyCard && !dailyCard.dataset.splitComplianceCard) {
+      dailyCard.dataset.splitComplianceCard = "daily";
+      const label = dailyCard.querySelector(".kpi-label");
+      if (label) label.textContent = "Daily Compliance";
+
+      summaryNode.hidden = true;
+      const summaryLabel = dailyCard.querySelector("#summary-label");
+      if (summaryLabel) summaryLabel.hidden = true;
+      const originalProgress = dailyCard.querySelector(".progress-track");
+      if (originalProgress) originalProgress.hidden = true;
+
+      dailyCard.insertAdjacentHTML("beforeend", `
+        <strong id="overview-daily-compliance">— / —</strong>
+        <span id="overview-daily-label">Loading daily requirements…</span>
+        <div class="progress-track"><i id="overview-daily-progress"></i></div>`);
+    }
+
+    const pendingNode = document.querySelector("#overview-pending");
+    const weeklyCard = pendingNode?.closest(".kpi-card");
+    if (weeklyCard && !weeklyCard.dataset.splitComplianceCard) {
+      weeklyCard.dataset.splitComplianceCard = "weekly";
+      const label = weeklyCard.querySelector(".kpi-label");
+      if (label) label.textContent = "Weekly Compliance";
+
+      pendingNode.hidden = true;
+      [...weeklyCard.querySelectorAll(":scope > span")].forEach((node) => {
+        if (!node.classList.contains("kpi-label")) node.hidden = true;
+      });
+
+      weeklyCard.insertAdjacentHTML("beforeend", `
+        <strong id="overview-weekly-compliance">— / —</strong>
+        <span id="overview-weekly-label">Loading weekly requirements…</span>
+        <div class="progress-track"><i id="overview-weekly-progress"></i></div>`);
+    }
+  }
+
+  function ensureComplianceCyclePanel() {
+    const panel = document.querySelector("#google-links-panel");
+    const tableHead = panel?.querySelector(".compliance-table-head");
+    if (!panel || !tableHead || panel.querySelector("#compliance-cycle-summary")) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.id = "compliance-cycle-summary";
+    wrapper.setAttribute("aria-label", "Daily and weekly compliance summary");
+    wrapper.style.cssText = "display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0 18px;";
+    wrapper.innerHTML = `
+      <article class="kpi-card" style="padding:18px;">
+        <span class="kpi-label">Daily Compliance</span>
+        <strong id="compliance-daily-count">— / —</strong>
+        <span id="compliance-daily-note">Loading daily requirements…</span>
+        <div class="progress-track"><i id="compliance-daily-progress"></i></div>
+      </article>
+      <article class="kpi-card" style="padding:18px;">
+        <span class="kpi-label">Weekly Compliance</span>
+        <strong id="compliance-weekly-count">— / —</strong>
+        <span id="compliance-weekly-note">Loading weekly requirements…</span>
+        <div class="progress-track"><i id="compliance-weekly-progress"></i></div>
+      </article>`;
+    tableHead.before(wrapper);
+  }
+
+  function updateSplitCompliance() {
+    if (typeof state === "undefined") return;
+    ensureSplitOverviewCards();
+    ensureComplianceCyclePanel();
+
+    const { daily, weekly } = complianceGroups();
+    const dailyDone = completedCount(daily);
+    const weeklyDone = completedCount(weekly);
+    const dailyPending = Math.max(0, daily.length - dailyDone);
+    const weeklyPending = Math.max(0, weekly.length - weeklyDone);
+
+    const setText = (selector, text) => {
+      const node = document.querySelector(selector);
+      if (node) node.textContent = text;
+    };
+    const setProgress = (selector, done, total) => {
+      const node = document.querySelector(selector);
+      if (node) node.style.width = `${total ? (done / total) * 100 : 0}%`;
+    };
+
+    setText("#overview-daily-compliance", `${dailyDone} / ${daily.length}`);
+    setText(
+      "#overview-daily-label",
+      dailyPending === 0
+        ? "All daily requirements complied."
+        : `${dailyPending} daily requirement${dailyPending === 1 ? "" : "s"} pending.`
+    );
+    setProgress("#overview-daily-progress", dailyDone, daily.length);
+
+    setText("#overview-weekly-compliance", `${weeklyDone} / ${weekly.length}`);
+    setText(
+      "#overview-weekly-label",
+      weeklyPending === 0
+        ? "All weekly requirements complied."
+        : `${weeklyPending} weekly requirement${weeklyPending === 1 ? "" : "s"} pending.`
+    );
+    setProgress("#overview-weekly-progress", weeklyDone, weekly.length);
+
+    setText("#compliance-daily-count", `${dailyDone} / ${daily.length}`);
+    setText(
+      "#compliance-daily-note",
+      dailyPending === 0
+        ? "All daily requirements complied."
+        : `${dailyPending} pending for today's reporting cycle.`
+    );
+    setProgress("#compliance-daily-progress", dailyDone, daily.length);
+
+    setText("#compliance-weekly-count", `${weeklyDone} / ${weekly.length}`);
+    setText(
+      "#compliance-weekly-note",
+      weeklyPending === 0
+        ? "All weekly/current-week requirements complied."
+        : `${weeklyPending} pending for the current weekly/inventory cycle.`
+    );
+    setProgress("#compliance-weekly-progress", weeklyDone, weekly.length);
+  }
+
   function applyVerifiedSummary() {
     removeLockedComplianceItem();
     if (!summaryIsForToday(verifiedSummary)) return false;
@@ -133,6 +270,7 @@
       renderCompliance();
       updateVerificationNotes();
       updateVerifiedTimestamp();
+      updateSplitCompliance();
     } catch (error) {
       console.warn("Verified Google Sheet compliance summary is temporarily unavailable.", error);
     }
@@ -151,14 +289,17 @@
       const result = originalRenderCompliance();
       updateVerificationNotes();
       updateVerifiedTimestamp();
+      updateSplitCompliance();
       return result;
     };
 
     renderCompliance();
     restoreCache();
     if (applyVerifiedSummary()) renderCompliance();
+    updateSplitCompliance();
     refreshVerifiedSummary();
     window.setInterval(refreshVerifiedSummary, POLL_INTERVAL);
+    window.setInterval(updateSplitCompliance, 1500);
   }
 
   function waitForApp() {
