@@ -45,11 +45,9 @@
 
   function complianceGroups() {
     if (typeof complianceItems === "undefined") return { daily: [], weekly: [] };
-
     const daily = complianceItems.filter((item) =>
       String(item.frequency || "").toLowerCase().includes("daily")
     );
-
     const dailyIds = new Set(daily.map((item) => item.id));
     const weekly = complianceItems.filter((item) => !dailyIds.has(item.id));
     return { daily, weekly };
@@ -57,6 +55,12 @@
 
   function completedCount(items) {
     return items.filter((item) => Boolean(state.statuses?.[item.id])).length;
+  }
+
+  function forceHide(node) {
+    if (!node) return;
+    node.hidden = true;
+    node.style.setProperty("display", "none", "important");
   }
 
   function ensureSplitOverviewCards() {
@@ -67,34 +71,43 @@
       const label = dailyCard.querySelector(".kpi-label");
       if (label) label.textContent = "Daily Compliance";
 
-      summaryNode.hidden = true;
+      forceHide(summaryNode);
       const summaryLabel = dailyCard.querySelector("#summary-label");
-      if (summaryLabel) summaryLabel.hidden = true;
-      const originalProgress = dailyCard.querySelector(".progress-track");
-      if (originalProgress) originalProgress.hidden = true;
+      forceHide(summaryLabel);
+      const originalProgress = dailyCard.querySelector("#summary-progress")?.closest(".progress-track");
+      forceHide(originalProgress);
 
       dailyCard.insertAdjacentHTML("beforeend", `
         <strong id="overview-daily-compliance">— / —</strong>
         <span id="overview-daily-label">Loading daily requirements…</span>
         <div class="progress-track"><i id="overview-daily-progress"></i></div>`);
+    } else if (dailyCard) {
+      forceHide(summaryNode);
+      forceHide(dailyCard.querySelector("#summary-label"));
+      forceHide(dailyCard.querySelector("#summary-progress")?.closest(".progress-track"));
     }
 
     const pendingNode = document.querySelector("#overview-pending");
-    const weeklyCard = pendingNode?.closest(".kpi-card");
+    const weeklyCard = pendingNode?.closest(".kpi-card") || document.querySelector('[data-split-compliance-card="weekly"]');
     if (weeklyCard && !weeklyCard.dataset.splitComplianceCard) {
       weeklyCard.dataset.splitComplianceCard = "weekly";
       const label = weeklyCard.querySelector(".kpi-label");
       if (label) label.textContent = "Weekly Compliance";
 
-      pendingNode.hidden = true;
+      forceHide(pendingNode);
       [...weeklyCard.querySelectorAll(":scope > span")].forEach((node) => {
-        if (!node.classList.contains("kpi-label")) node.hidden = true;
+        if (!node.classList.contains("kpi-label") && node.id !== "overview-weekly-label") forceHide(node);
       });
 
       weeklyCard.insertAdjacentHTML("beforeend", `
         <strong id="overview-weekly-compliance">— / —</strong>
         <span id="overview-weekly-label">Loading weekly requirements…</span>
         <div class="progress-track"><i id="overview-weekly-progress"></i></div>`);
+    } else if (weeklyCard) {
+      forceHide(document.querySelector("#overview-pending"));
+      [...weeklyCard.querySelectorAll(":scope > span")].forEach((node) => {
+        if (!node.classList.contains("kpi-label") && node.id !== "overview-weekly-label") forceHide(node);
+      });
     }
   }
 
@@ -144,39 +157,27 @@
     };
 
     setText("#overview-daily-compliance", `${dailyDone} / ${daily.length}`);
-    setText(
-      "#overview-daily-label",
-      dailyPending === 0
-        ? "All daily requirements complied."
-        : `${dailyPending} daily requirement${dailyPending === 1 ? "" : "s"} pending.`
-    );
+    setText("#overview-daily-label", dailyPending === 0
+      ? "All daily requirements complied."
+      : `${dailyPending} daily requirement${dailyPending === 1 ? "" : "s"} pending.`);
     setProgress("#overview-daily-progress", dailyDone, daily.length);
 
     setText("#overview-weekly-compliance", `${weeklyDone} / ${weekly.length}`);
-    setText(
-      "#overview-weekly-label",
-      weeklyPending === 0
-        ? "All weekly requirements complied."
-        : `${weeklyPending} weekly requirement${weeklyPending === 1 ? "" : "s"} pending.`
-    );
+    setText("#overview-weekly-label", weeklyPending === 0
+      ? "All weekly requirements complied."
+      : `${weeklyPending} weekly requirement${weeklyPending === 1 ? "" : "s"} pending.`);
     setProgress("#overview-weekly-progress", weeklyDone, weekly.length);
 
     setText("#compliance-daily-count", `${dailyDone} / ${daily.length}`);
-    setText(
-      "#compliance-daily-note",
-      dailyPending === 0
-        ? "All daily requirements complied."
-        : `${dailyPending} pending for today's reporting cycle.`
-    );
+    setText("#compliance-daily-note", dailyPending === 0
+      ? "All daily requirements complied."
+      : `${dailyPending} pending for today's reporting cycle.`);
     setProgress("#compliance-daily-progress", dailyDone, daily.length);
 
     setText("#compliance-weekly-count", `${weeklyDone} / ${weekly.length}`);
-    setText(
-      "#compliance-weekly-note",
-      weeklyPending === 0
-        ? "All weekly/current-week requirements complied."
-        : `${weeklyPending} pending for the current weekly/inventory cycle.`
-    );
+    setText("#compliance-weekly-note", weeklyPending === 0
+      ? "All weekly/current-week requirements complied."
+      : `${weeklyPending} pending for the current weekly/inventory cycle.`);
     setProgress("#compliance-weekly-progress", weeklyDone, weekly.length);
   }
 
@@ -258,7 +259,6 @@
       if (!response.ok) throw new Error(`Verified compliance HTTP ${response.status}`);
       const summary = await response.json();
       if (!isValidSummary(summary)) throw new Error("Verified compliance summary is invalid.");
-
       if (!summaryIsForToday(summary)) {
         console.warn("Verified compliance summary is not yet for today's Philippine date.");
         return;
@@ -279,7 +279,6 @@
   function install() {
     if (installed) return;
     installed = true;
-
     removeLockedComplianceItem();
 
     const originalRenderCompliance = renderCompliance;
