@@ -5,6 +5,8 @@
   const CITATION_SHEET_URL =
     `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/edit?gid=0#gid=0`;
   const POLL_INTERVAL = 60 * 1000;
+  const STATUS_POLL_INTERVAL = 2 * 60 * 1000;
+  const STATUS_CACHE_KEY = "consolacion-mps-compliance-status-v1";
 
   let latestSummary = null;
   let installed = false;
@@ -94,6 +96,68 @@
       </a>`;
   }
 
+  function restoreCachedComplianceStatus() {
+    try {
+      const cached = JSON.parse(localStorage.getItem(STATUS_CACHE_KEY) || "null");
+      if (!cached || cached.todayKey !== state.todayKey || !cached.statuses) return;
+
+      state.statuses = { ...state.statuses, ...cached.statuses };
+      state.statusSources = { ...state.statusSources, ...(cached.statusSources || {}) };
+      if (cached.dateLabel) {
+        const dateLabel = document.querySelector("#date-label");
+        if (dateLabel) dateLabel.textContent = cached.dateLabel;
+      }
+      renderCompliance();
+    } catch (error) {
+      console.warn("Unable to restore cached compliance status.", error);
+    }
+  }
+
+  async function refreshComplianceStatus() {
+    try {
+      // Use a simple GET with no custom Content-Type header. This avoids a
+      // cross-origin preflight that can leave the redesigned dashboard showing
+      // the all-false initialization state (0 / 13) even though saved statuses
+      // still exist on the shared status service.
+      const response = await fetch(`${API_BASE}/api/status?ts=${Date.now()}`, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "omit",
+      });
+      if (!response.ok) throw new Error(`Compliance status HTTP ${response.status}`);
+
+      const data = await response.json();
+      if (!data || typeof data.statuses !== "object" || data.statuses === null) {
+        throw new Error("Compliance status response is incomplete.");
+      }
+
+      state.statuses = { ...state.statuses, ...data.statuses };
+      state.statusSources = { ...state.statusSources, ...(data.statusSources || {}) };
+
+      const dateLabel = document.querySelector("#date-label");
+      if (dateLabel && data.dateLabel) dateLabel.textContent = data.dateLabel;
+
+      localStorage.setItem(
+        STATUS_CACHE_KEY,
+        JSON.stringify({
+          todayKey: state.todayKey,
+          statuses: data.statuses,
+          statusSources: data.statusSources || {},
+          dateLabel: data.dateLabel || "",
+          savedAt: Date.now(),
+        }),
+      );
+
+      renderCompliance();
+    } catch (error) {
+      console.warn("Shared compliance status is temporarily unavailable.", error);
+      const summaryLabel = document.querySelector("#summary-label");
+      if (summaryLabel && summaryLabel.textContent.includes("still red")) {
+        summaryLabel.textContent = "Reconnecting to the shared compliance status…";
+      }
+    }
+  }
+
   async function refreshSummary() {
     try {
       const response = await fetch(`${SUMMARY_URL}?v=${Date.now()}`, { cache: "no-store" });
@@ -130,13 +194,17 @@
       };
     }
 
+    restoreCachedComplianceStatus();
+    refreshComplianceStatus();
     refreshSummary();
+    window.setInterval(refreshComplianceStatus, STATUS_POLL_INTERVAL);
     window.setInterval(refreshSummary, POLL_INTERVAL);
   }
 
   function waitForApp() {
     if (
       typeof state === "undefined" ||
+      typeof renderCompliance !== "function" ||
       typeof renderAccomplishments !== "function"
     ) {
       window.setTimeout(waitForApp, 150);
