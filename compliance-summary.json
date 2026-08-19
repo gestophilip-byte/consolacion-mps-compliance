@@ -1,8 +1,8 @@
 {
   "dateKey": "2026-08-19",
-  "checkedAt": "2026-08-19T18:08:00+08:00",
+  "checkedAt": "2026-08-19T18:18:00+08:00",
   "timeZone": "Asia/Manila",
-  "rule": "Daily items are green only when the current-day Consolacion entry is populated. Weekly/inventory items use the current reporting week. NIL and 0 count as populated values when entered.",
+  "rule": "Daily items are green only when the current-day/current-shift Consolacion entry is populated. Weekly/inventory items use the current reporting week. A station name or date alone does not count. Explicit NIL and 0 values count as populated entries.",
   "statuses": {
     "daily-patrol-operations-report": false,
     "police-response-outside-e911": false,
@@ -15,7 +15,7 @@
     "foreign-tourist-incidents": false,
     "cppo-google-forms-5-6-7": false,
     "cppo-deployment-forms-1-4": false,
-    "citation-monitoring": true,
+    "citation-monitoring": false,
     "inventory-purok-barangay-activities-fiestas-security": false
   },
   "statusSources": {
@@ -30,7 +30,7 @@
     "foreign-tourist-incidents": "watching",
     "cppo-google-forms-5-6-7": "watching",
     "cppo-deployment-forms-1-4": "watching",
-    "citation-monitoring": "automatic",
+    "citation-monitoring": "watching",
     "inventory-purok-barangay-activities-fiestas-security": "watching"
   },
   "notes": {
@@ -39,13 +39,13 @@
     "pds-daily-monitoring-e911": "The latest Consolacion E911 entry found was August 15, 2026; no August 19 entry was found.",
     "pds-daily-monitoring-simex-commex": "The latest Consolacion SIMEX/COMMEX entry found was August 17, 2026; no August 19 entry was found.",
     "ccpo-emergency-alert-button": "No Consolacion entry was found in the 2026 CPPO sheet during this check.",
-    "weekly-drone-patrolling": "Consolacion MPS has populated values in the current August 16-22, 2026 reporting week.",
+    "weekly-drone-patrolling": "Consolacion MPS has populated values in the current August 16-22, 2026 reporting week, including values through the current part of the week.",
     "daily-duty-personnel-schools": "Consolacion school-security rows found are dated August 20, 2026, not August 19, 2026.",
     "checkpoint-local-traffic-ordinances": "The August 19, 2026 Consolacion row exists but its operational fields are blank.",
     "foreign-tourist-incidents": "The August 19, 2026 CPPO date row is blank for City/MPS; the static Consolacion label elsewhere does not count as a submission.",
     "cppo-google-forms-5-6-7": "The August 19, 2026 Consolacion row exists but Forms 5, 6 and 7 fields are blank.",
-    "cppo-deployment-forms-1-4": "The linked workbook is an August 3-9 reporting file and Consolacion Form 2 is empty, so the four-form requirement is not complete.",
-    "citation-monitoring": "The current August 18-19 monitoring tab contains populated citation data (4 citations / PHP 2,000 in the current coverage tab).",
+    "cppo-deployment-forms-1-4": "The linked workbook is an August 3-9 reporting file and Consolacion Form 2 is empty, so the four-form requirement is not complete for the current reporting period.",
+    "citation-monitoring": "The newest tab is August 18-19, 2026. Its populated 4-citation entry belongs to the August 18 daytime block, while the August 18-19 overnight block is blank and there is no August 19 daytime/current-shift entry yet.",
     "inventory-purok-barangay-activities-fiestas-security": "The current August 17-23 Consolacion row exists but is blank beyond the station name."
   }
 }
