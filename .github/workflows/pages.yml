@@ -36,17 +36,21 @@ jobs:
           python -m pip install --disable-pip-version-check requests openpyxl
           python scripts/update_citation_summary.py
 
-      - name: Enable live citation totals on the site
+      - name: Enable live automation on the site
         run: |
           python - <<'PY'
           from pathlib import Path
 
           path = Path("index.html")
           html = path.read_text(encoding="utf-8")
-          script = '<script src="citation-auto.js" defer></script>'
+          scripts = [
+              '<script src="citation-auto.js" defer></script>',
+              '<script src="emergency-alert.js?v=20260820-2310" defer></script>',
+          ]
 
-          if script not in html:
-              html = html.replace("</body>", f"    {script}\n  </body>")
+          for script in scripts:
+              if script not in html:
+                  html = html.replace("</body>", f"    {script}\n  </body>")
 
           path.write_text(html, encoding="utf-8")
           PY
