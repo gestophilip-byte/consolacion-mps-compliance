@@ -248,5 +248,10 @@
   verifiedComplianceScript.async = true;
   document.head.appendChild(verifiedComplianceScript);
 
+  const deploymentScript = document.createElement("script");
+  deploymentScript.src = `deployment.js?v=${Date.now()}`;
+  deploymentScript.async = true;
+  document.head.appendChild(deploymentScript);
+
   waitForApp();
 })();
