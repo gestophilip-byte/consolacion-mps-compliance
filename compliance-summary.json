@@ -1,6 +1,6 @@
 {
   "dateKey": "2026-08-20",
-  "checkedAt": "2026-08-20T03:15:41+08:00",
+  "checkedAt": "2026-08-20T09:07:41+08:00",
   "timeZone": "Asia/Manila",
   "rule": "Daily items are green only when the current-day/current-shift Consolacion entry is populated. Weekly/inventory items use the current reporting week and must be populated through the current part of the week. A station name, date, pre-created row, or data belonging to yesterday does not count. Explicit NIL and 0 values count as populated entries.",
   "statuses": {
@@ -15,7 +15,7 @@
     "cppo-google-forms-5-6-7": false,
     "cppo-deployment-forms-1-4": false,
     "citation-monitoring": false,
-    "inventory-purok-barangay-activities-fiestas-security": false
+    "inventory-purok-barangay-activities-fiestas-security": true
   },
   "statusSources": {
     "police-response-outside-e911": "watching",
@@ -29,7 +29,7 @@
     "cppo-google-forms-5-6-7": "watching",
     "cppo-deployment-forms-1-4": "watching",
     "citation-monitoring": "watching",
-    "inventory-purok-barangay-activities-fiestas-security": "watching"
+    "inventory-purok-barangay-activities-fiestas-security": "automatic"
   },
   "notes": {
     "police-response-outside-e911": "No August 20, 2026 Consolacion record was found; matching Consolacion rows are from earlier dates.",
@@ -43,6 +43,6 @@
     "cppo-google-forms-5-6-7": "No August 20, 2026 tab exists yet, so today's Forms 5, 6 and 7 requirement is pending.",
     "cppo-deployment-forms-1-4": "The linked workbook is still titled for the August 3-9, 2026 reporting period, not the current week.",
     "citation-monitoring": "The newest available tab remains August 18-19, 2026; no August 20/current-shift block is available yet.",
-    "inventory-purok-barangay-activities-fiestas-security": "The current August 17-23 Consolacion row exists but remains blank beyond the station name."
+    "inventory-purok-barangay-activities-fiestas-security": "The current August 17-23, 2026 Consolacion row is dated August 20 and contains explicit Negative inventory/security entries, so the current-week requirement is verified complied."
   }
 }
