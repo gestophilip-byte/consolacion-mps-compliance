@@ -1,6 +1,6 @@
 {
   "dateKey": "2026-08-21",
-  "checkedAt": "2026-08-21T00:21:08+08:00",
+  "checkedAt": "2026-08-21T16:16:26+08:00",
   "timeZone": "Asia/Manila",
   "rule": "Daily items are green only when the current-day/current-shift Consolacion entry is populated. Weekly/inventory items use the current reporting week and must be populated through the current part of the week. A station name, date, pre-created row, or data belonging to yesterday does not count. Explicit NIL and 0 values count as populated entries.",
   "statuses": {
@@ -12,7 +12,7 @@
     "daily-duty-personnel-schools": true,
     "checkpoint-local-traffic-ordinances": false,
     "foreign-tourist-incidents": false,
-    "cppo-google-forms-5-6-7": false,
+    "cppo-google-forms-5-6-7": true,
     "cppo-deployment-forms-1-4": false,
     "citation-monitoring": false,
     "inventory-purok-barangay-activities-fiestas-security": false
@@ -26,7 +26,7 @@
     "daily-duty-personnel-schools": "automatic",
     "checkpoint-local-traffic-ordinances": "watching",
     "foreign-tourist-incidents": "watching",
-    "cppo-google-forms-5-6-7": "watching",
+    "cppo-google-forms-5-6-7": "automatic",
     "cppo-deployment-forms-1-4": "watching",
     "citation-monitoring": "watching",
     "inventory-purok-barangay-activities-fiestas-security": "watching"
@@ -40,7 +40,7 @@
     "daily-duty-personnel-schools": "Consolacion rows dated exactly August 21, 2026 contain deployment data, so today's requirement is complied.",
     "checkpoint-local-traffic-ordinances": "The August 21, 2026 tab exists, but the Consolacion row contains only the station name and no operational values yet.",
     "foreign-tourist-incidents": "The August 21, 2026 CPPO date row exists but contains no Consolacion/Consolacion MPS report data.",
-    "cppo-google-forms-5-6-7": "No August 21, 2026 tab is available yet, so Forms 5, 6 and 7 cannot be verified for today.",
+    "cppo-google-forms-5-6-7": "The August 21, 2026 tab is available and the Consolacion row has all three required Forms 5, 6 and 7 fields populated.",
     "cppo-deployment-forms-1-4": "The workbook still corresponds to the August 3-9, 2026 reporting period, not the current reporting week.",
     "citation-monitoring": "The newest coverage tab remains August 18-19, 2026; no August 21 current-day/current-shift block is available.",
     "inventory-purok-barangay-activities-fiestas-security": "The current August 17-23, 2026 Consolacion row is populated only for August 20; no August 21 inventory/security entry is present yet."
