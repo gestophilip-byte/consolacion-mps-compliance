@@ -1,6 +1,6 @@
 {
   "dateKey": "2026-08-22",
-  "checkedAt": "2026-08-22T15:07:50+08:00",
+  "checkedAt": "2026-08-22T16:17:00+08:00",
   "timeZone": "Asia/Manila",
   "rule": "Daily items are green only when the current-day/current-shift Consolacion entry is populated. Weekly/inventory items use the current reporting week and must be populated through the current part of the week. A station name, date, pre-created row, or data belonging to yesterday does not count. Explicit NIL and 0 values count as populated entries.",
   "statuses": {
@@ -41,7 +41,7 @@
     "checkpoint-local-traffic-ordinances": "The August 22, 2026 Consolacion row exists but contains no operational values beyond the station label.",
     "foreign-tourist-incidents": "The August 22, 2026 CPPO date row exists but contains no Consolacion/Consolacion MPS report data.",
     "cppo-google-forms-5-6-7": "The August 22, 2026 tab is present and the Consolacion row has all three required report fields populated, so today's requirement is verified.",
-    "cppo-deployment-forms-1-4": "The deployment workbook does not correspond to the current August 17-23 reporting week; its current workbook/header period remains earlier than the active week.",
+    "cppo-deployment-forms-1-4": "The workbook is for August 17-23, 2026, but all four Consolacion forms are not current-period complete: Form 2 is blank and Forms 3-4 still contain older July reporting content.",
     "citation-monitoring": "The newest August 21-22, 2026 coverage tab still carries an earlier August 18 daytime reporting header and has no current August 22 Consolacion shift entry.",
     "inventory-purok-barangay-activities-fiestas-security": "The current August 17-23, 2026 Consolacion row contains inventory/security values beyond the station name, so the current-week requirement is verified."
   }
