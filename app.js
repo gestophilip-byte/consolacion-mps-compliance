@@ -209,7 +209,7 @@
     }
 
     function showCommandPage(page, control = null) {
-      const target = ["overview", "calendar", "compliance"].includes(page) ? page : "overview";
+      const target = ["overview", "calendar", "sitrep", "compliance"].includes(page) ? page : "overview";
       document.querySelectorAll("[data-command-page-panel]").forEach((section) => {
         section.hidden = section.dataset.commandPagePanel !== target;
       });
@@ -230,6 +230,7 @@
       const titleMap = {
         overview: "Operations Command & Compliance Center",
         calendar: "Operations Calendar",
+        sitrep: "Hourly SITREP Monitoring",
         "google-links": "Compliance Requirements",
         aars: "After-Activity Reports",
         accomplishments: campaign ? "Citation Monitoring" : "Operational Accomplishments",
@@ -302,6 +303,7 @@
       const map = {
         "#overview": '[data-command-page="overview"]',
         "#calendar": '[data-command-page="calendar"]',
+        "#sitrep": '[data-command-page="sitrep"]',
         "#compliance": '[data-command-workspace="google-links"]',
         "#accomplishments": '[data-command-workspace="accomplishments"]:not([data-command-campaign])',
         "#citation-monitoring": '[data-command-campaign="citation-monitoring"]',
