@@ -24,6 +24,7 @@
         <a class="active" href="#overview" data-command-page="overview"><span class="nav-icon">⌂</span><span>Overview</span></a>
         <a href="#compliance" data-command-page="compliance" data-command-workspace="google-links"><span class="nav-icon">✓</span><span>Compliance</span></a>
         <a href="#calendar" data-command-page="calendar"><span class="nav-icon">▦</span><span>Calendar</span></a>
+        <a href="#sitrep" data-command-page="sitrep"><span class="nav-icon">S</span><span>SITREP Tracker</span></a>
         <p>Reports</p>
         <a href="#accomplishments" data-command-page="compliance" data-command-workspace="accomplishments"><span class="nav-icon">▥</span><span>Accomplishments</span></a>
         <a href="#focus-crime" data-command-page="compliance" data-command-workspace="focus-crime"><span class="nav-icon">8</span><span>8 Focus Crime</span></a>
@@ -86,6 +87,40 @@
           </div>
           <form id="activity-form" class="activity-form"><div class="form-heading"><div><p class="kicker">Public entry</p><h3>Add an Activity</h3></div><p>Complete the required title and date fields.</p></div><div class="form-grid"><label class="wide">Activity title <span aria-hidden="true">*</span><input name="title" maxlength="120" required placeholder="e.g. Barangay coordination meeting" /></label><label>Date <span aria-hidden="true">*</span><input name="activityDate" type="date" required /></label><label>Time<input name="activityTime" type="time" /></label><label class="wide">Location<input name="location" maxlength="180" placeholder="Activity location" /></label><label class="full">Details<textarea name="details" maxlength="1000" rows="4" placeholder="Purpose, participants, reminders, or other details"></textarea></label></div><div class="form-footer"><p id="form-message" role="status" aria-live="polite"></p><button class="button primary" type="submit">Save public activity</button></div></form>
         </section>
+        <section class="command-page sitrep-page" id="sitrep" data-command-page-panel="sitrep" hidden aria-labelledby="sitrep-title">
+          <div class="page-section-heading sitrep-page-heading">
+            <div>
+              <p class="kicker">24-hour patrol monitoring</p>
+              <h2 id="sitrep-title">Hourly SITREP Tracker</h2>
+              <p>Mark each report green after the required hourly SITREP has been received from the patrollers.</p>
+            </div>
+          </div>
+          <div class="sitrep-date-toolbar">
+            <div class="sitrep-date-copy">
+              <strong id="sitrep-date-label">Duty date</strong>
+              <span id="sitrep-day-range">Coverage: 8:00 AM to 8:00 AM the following day</span>
+            </div>
+            <div class="sitrep-date-controls">
+              <label>Duty start date<input id="sitrep-duty-date" type="date" aria-label="Select SITREP duty start date" /></label>
+              <button class="button outline" id="sitrep-today" type="button">Current duty</button>
+              <button class="button outline" id="sitrep-reset" type="button">Clear marks</button>
+            </div>
+          </div>
+          <div class="sitrep-directive">
+            <article class="sitrep-order-card">
+              <h3>Hourly reporting directive</h3>
+              <p>All patrollers are directed to submit a Situation Report (SITREP) every one (1) hour through the designated communication channel. Even when there is no untoward incident, the patroller must report: <strong>“Situation normal; no untoward incident reported.”</strong> Failure to submit without valid justification shall be recorded and dealt with accordingly.</p>
+              <p class="sitrep-device-note">ⓘ Green marks are saved on the device and browser used to update this tracker.</p>
+            </article>
+            <article class="sitrep-overall-card">
+              <small>Full duty completion</small>
+              <strong id="sitrep-overall-count">0 / 24</strong>
+              <div class="progress-track"><i id="sitrep-overall-progress"></i></div>
+            </article>
+          </div>
+          <p class="sitrep-message" id="sitrep-message" role="status" aria-live="polite"></p>
+          <div class="sitrep-shifts" id="sitrep-shifts" aria-live="polite"></div>
+        </section>
         <section class="command-page compliance-section" id="compliance" data-command-page-panel="compliance" hidden aria-labelledby="compliance-title">
           <div class="page-section-heading compliance-heading"><div><p class="kicker">Daily and weekly requirements</p><h2 id="compliance-title">Compliance Workspaces</h2><p>Open each Google workspace and finish the current Consolacion entry. Supported sheets turn green automatically.</p></div><div class="legend"><span><i class="dot red"></i>Not complied</span><span><i class="dot green"></i>Complied</span><span>Sheets rechecked every 2 minutes</span></div></div>
           <div class="workspace-tabs" id="workspace-tabs" role="tablist" aria-label="Choose portal content"><button class="active" type="button" role="tab" aria-selected="true" data-workspace-view="google-links">Google Links</button><button type="button" role="tab" aria-selected="false" data-workspace-view="aars">AARs</button><button type="button" role="tab" aria-selected="false" data-workspace-view="accomplishments">Accomplishments</button><button type="button" role="tab" aria-selected="false" data-workspace-view="focus-crime">8 Focus Crime</button><button type="button" role="tab" aria-selected="false" data-workspace-view="oplan-katok">Oplan Katok</button><button type="button" role="tab" aria-selected="false" data-workspace-view="map">Google Map</button></div>
@@ -104,5 +139,6 @@
   </div>
   <script src="app.js" defer></script>
   <script src="citation-auto.js" defer></script>
+  <script src="sitrep-tracker.js" defer></script>
 </body>
 </html>
