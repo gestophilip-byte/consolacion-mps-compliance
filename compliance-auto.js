@@ -1,5 +1,5 @@
 (() => {
-  const version = "20260825-1443";
+  const version = "20260825-1455";
 
   const base = document.createElement("script");
   base.src = `compliance-auto-base.js?v=${version}`;
@@ -17,7 +17,7 @@
   document.head.appendChild(sitrepDelayStatus);
 
   const sitrepMemoGenerator = document.createElement("script");
-  sitrepMemoGenerator.src = `sitrep-memo-generator.js?v=${version}`;
-  sitrepMemoGenerator.onerror = () => console.error("Unable to load SITREP explanation memo generator.");
+  sitrepMemoGenerator.src = `sitrep-memo-generator-v2.js?v=${version}`;
+  sitrepMemoGenerator.onerror = () => console.error("Unable to load PNP-style SITREP explanation memorandum generator.");
   document.head.appendChild(sitrepMemoGenerator);
 })();
