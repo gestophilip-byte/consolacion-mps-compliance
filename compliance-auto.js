@@ -1,5 +1,5 @@
 (() => {
-  const version = "20260825-1630";
+  const version = "20260825-1645";
 
   const base = document.createElement("script");
   base.src = `compliance-auto-base.js?v=${version}`;
@@ -24,5 +24,11 @@
   const sharedSync = document.createElement("script");
   sharedSync.src = `shared-duty-sync.js?v=${version}`;
   sharedSync.onerror = () => console.error("Unable to load shared Duty & SITREP sync.");
+  sharedSync.onload = () => {
+    const migrationFix = document.createElement("script");
+    migrationFix.src = `shared-duty-sync-migration-fix.js?v=${version}`;
+    migrationFix.onerror = () => console.error("Unable to load optimized shared history migration.");
+    document.head.appendChild(migrationFix);
+  };
   document.head.appendChild(sharedSync);
 })();
