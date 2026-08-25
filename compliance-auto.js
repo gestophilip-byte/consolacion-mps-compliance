@@ -1,5 +1,5 @@
 (() => {
-  const version = "20260825-1608";
+  const version = "20260825-1620";
 
   const base = document.createElement("script");
   base.src = `compliance-auto-base.js?v=${version}`;
@@ -23,5 +23,6 @@
 
   const sharedSync = document.createElement("script");
   sharedSync.src = `shared-duty-sync.js?v=${version}`;
+  sharedSync.onerror = () => console.error("Unable to load shared Duty & SITREP sync.");
   document.head.appendChild(sharedSync);
 })();
