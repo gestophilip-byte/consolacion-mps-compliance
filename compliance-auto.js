@@ -1,5 +1,5 @@
 (() => {
-  const version = "20260825-1620";
+  const version = "20260825-1630";
 
   const base = document.createElement("script");
   base.src = `compliance-auto-base.js?v=${version}`;
