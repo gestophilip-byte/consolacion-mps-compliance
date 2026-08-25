@@ -1,5 +1,5 @@
 (() => {
-  const version = "20260825-1455";
+  const version = "20260825-1608";
 
   const base = document.createElement("script");
   base.src = `compliance-auto-base.js?v=${version}`;
@@ -20,4 +20,8 @@
   sitrepMemoGenerator.src = `sitrep-memo-generator-v2.js?v=${version}`;
   sitrepMemoGenerator.onerror = () => console.error("Unable to load PNP-style SITREP explanation memorandum generator.");
   document.head.appendChild(sitrepMemoGenerator);
+
+  const sharedSync = document.createElement("script");
+  sharedSync.src = `shared-duty-sync.js?v=${version}`;
+  document.head.appendChild(sharedSync);
 })();
