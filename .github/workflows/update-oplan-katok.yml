@@ -33,13 +33,14 @@ jobs:
             (.kinds | type == "object") and
             (.firearmsStatus | type == "object") and
             (.expiryStatus | type == "object") and
+            (.monitoringStatus | type == "object") and
             (.barangays | type == "object") and
             (.privacy | type == "string")
           ' oplan-katok-summary.json > /dev/null
 
           # Guardrail: personally identifiable owner fields must not be present
           # in the public aggregate JSON.
-          if jq -e 'has("owners") or has("serialNumbers") or has("birthDates") or has("addresses")' oplan-katok-summary.json > /dev/null; then
+          if jq -e 'has("owners") or has("serialNumbers") or has("birthDates") or has("addresses") or has("actionDates") or has("rowActions")' oplan-katok-summary.json > /dev/null; then
             echo "::error::Public Katok summary contains a prohibited owner-level field."
             exit 1
           fi
@@ -54,5 +55,6 @@ jobs:
             duplicateSerialGroups,
             kinds,
             firearmsStatus,
-            expiryStatus
+            expiryStatus,
+            monitoringStatus
           }' oplan-katok-summary.json >> "$GITHUB_STEP_SUMMARY"
