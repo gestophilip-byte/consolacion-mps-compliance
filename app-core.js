@@ -107,7 +107,7 @@ const defaultAccomplishments = {
   workspaceReports: {
     googleLinks: { coveredPeriod: "Current daily and weekly reporting cycle", asOfDate: "17 August 2026" },
     aars: { coveredPeriod: "Current operational reporting period", asOfDate: "17 August 2026" },
-    oplanKatok: { coveredPeriod: "Master list through 17 August 2026", asOfDate: "17 August 2026" },
+    oplanKatok: { coveredPeriod: "Cleaned Consolacion firearm master list", asOfDate: "1 September 2026" },
     googleMap: { coveredPeriod: "Current compliance monitoring coverage", asOfDate: "17 August 2026" },
   },
   campaigns: [
@@ -185,11 +185,26 @@ const state = {
   activeAccomplishmentCampaign: defaultAccomplishments.campaigns[0].id,
   activeWorkspace: "google-links",
   oplanKatok: {
-    masterRecords: 357,
-    individuals: 237,
-    smallArms: 326,
-    lightWeapons: 17,
-    syncedAt: null,
+    masterRecords: 69,
+    uniqueSerials: 68,
+    individuals: 65,
+    smallArms: 66,
+    lightWeapons: 3,
+    duplicateSerialGroups: 1,
+    duplicateRowsFlagged: 2,
+    firearmTypes: { "SMALL ARM": 66, "LIGHT WEAPON": 3 },
+    kinds: { PISTOL: 55, REVOLVER: 6, SHOTGUN: 5, RIFLE: 3 },
+    firearmsStatus: { "RELEASED TO LICENSEE": 69 },
+    expiryStatus: { EXPIRED: 66, UNKNOWN: 3 },
+    barangays: {
+      CASILI: 13, TAYUD: 8, NANGKA: 7, PULPOGAN: 6, CANSAGA: 5, LAMAC: 5,
+      TUGBONGAN: 4, "POBLACION ORIENTAL": 3, "POBLACION OCCIDENTAL": 3,
+      PITOGO: 2, SACSAC: 2, UNSPECIFIED: 2, JUGAN: 2, TOLOTOLO: 2,
+      GARING: 1, DANGLAG: 1, POLOG: 1, CABANGAHAN: 1, PANOYPOY: 1,
+    },
+    source: "Cleaned Consolacion Firearm Master List",
+    asOfDate: "2026-09-01",
+    privacy: "Aggregate totals only.",
   },
   todayKey: localDateKey(new Date()),
   tomorrowKey: localDateKey(addDays(new Date(), 1)),
@@ -714,23 +729,66 @@ async function loadActivities() {
 }
 
 function renderOplanKatokSummary() {
-  const summary = state.oplanKatok;
-  document.querySelector("#katok-master-records").textContent = summary.masterRecords.toLocaleString("en-PH");
-  document.querySelector("#katok-individuals").textContent = summary.individuals.toLocaleString("en-PH");
-  document.querySelector("#katok-small-arms").textContent = summary.smallArms.toLocaleString("en-PH");
-  document.querySelector("#katok-light-weapons").textContent = summary.lightWeapons.toLocaleString("en-PH");
+  const summary = state.oplanKatok || {};
+  const numberText = (value) => Number.isFinite(Number(value))
+    ? Number(value).toLocaleString("en-PH")
+    : "—";
+  const setText = (selector, value) => {
+    const node = document.querySelector(selector);
+    if (node) node.textContent = numberText(value);
+  };
+  const labelText = (value) => String(value || "")
+    .toLowerCase()
+    .replace(/(^|\s)\S/g, (letter) => letter.toUpperCase());
+
+  setText("#katok-master-records", summary.masterRecords);
+  setText("#katok-individuals", summary.individuals);
+  setText("#katok-unique-serials", summary.uniqueSerials);
+  setText("#katok-duplicate-groups", summary.duplicateSerialGroups);
+  setText("#katok-small-arms", summary.smallArms);
+  setText("#katok-light-weapons", summary.lightWeapons);
+
+  const renderStats = (selector, values) => {
+    const host = document.querySelector(selector);
+    if (!host) return;
+    const entries = Object.entries(values || {}).sort((a, b) => Number(b[1]) - Number(a[1]) || a[0].localeCompare(b[0]));
+    host.innerHTML = entries.length
+      ? entries.map(([label, value]) => `<div><span>${escapeHtml(labelText(label))}</span><strong>${numberText(value)}</strong></div>`).join("")
+      : '<p class="empty-state">No aggregate data available.</p>';
+  };
+
+  renderStats("#katok-firearm-types", summary.firearmTypes);
+  renderStats("#katok-firearm-kinds", summary.kinds);
+  renderStats("#katok-expiry-status", summary.expiryStatus);
+  renderStats("#katok-firearms-status", summary.firearmsStatus);
+
+  const barangayHost = document.querySelector("#katok-barangay-list");
+  const barangayEntries = Object.entries(summary.barangays || {}).sort(
+    (a, b) => Number(b[1]) - Number(a[1]) || a[0].localeCompare(b[0]),
+  );
+  if (barangayHost) {
+    barangayHost.innerHTML = barangayEntries.map(([label, value]) => `
+      <div class="katok-barangay-item ${label === "UNSPECIFIED" ? "is-unspecified" : ""}">
+        <span>${escapeHtml(labelText(label))}</span><strong>${numberText(value)}</strong>
+      </div>`).join("");
+  }
+  setText("#katok-barangay-count", barangayEntries.length);
 
   const status = document.querySelector("#katok-sync-status");
-  if (summary.syncedAt) {
-    const synced = new Intl.DateTimeFormat("en-PH", {
-      timeZone: "Asia/Manila",
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }).format(new Date(summary.syncedAt));
-    status.textContent = `Automatically synced from the private Google Sheet. Last sync: ${synced} (Philippine time). Aggregate totals only.`;
+  if (status) {
+    let verifiedDate = "1 September 2026";
+    if (summary.asOfDate) {
+      const parsed = new Date(`${summary.asOfDate}T12:00:00+08:00`);
+      if (!Number.isNaN(parsed.getTime())) {
+        verifiedDate = new Intl.DateTimeFormat("en-PH", {
+          timeZone: "Asia/Manila",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }).format(parsed);
+      }
+    }
+    status.textContent = `Verified from the cleaned Consolacion firearm master list as of ${verifiedDate}. ${summary.privacy || "Aggregate totals only."}`;
   }
 }
 
@@ -738,22 +796,36 @@ async function loadOplanKatokSummary() {
   const status = document.querySelector("#katok-sync-status");
   try {
     const response = await fetch(`oplan-katok-summary.json?cache=${Date.now()}`, { cache: "no-store" });
-    if (!response.ok) throw new Error("Unable to load the latest totals.");
+    if (!response.ok) throw new Error("Unable to load the latest firearm summary.");
     const data = await response.json();
-    const fields = ["masterRecords", "individuals", "smallArms", "lightWeapons"];
-    if (!fields.every((field) => Number.isFinite(Number(data[field])))) {
-      throw new Error("The totals file is not valid.");
+    const numericFields = [
+      "masterRecords", "uniqueSerials", "individuals", "smallArms",
+      "lightWeapons", "duplicateSerialGroups",
+    ];
+    if (!numericFields.every((field) => Number.isFinite(Number(data[field])))) {
+      throw new Error("The firearm summary file is not valid.");
     }
+
     state.oplanKatok = {
       masterRecords: Number(data.masterRecords),
+      uniqueSerials: Number(data.uniqueSerials),
       individuals: Number(data.individuals),
       smallArms: Number(data.smallArms),
       lightWeapons: Number(data.lightWeapons),
-      syncedAt: data.syncedAt || null,
+      duplicateSerialGroups: Number(data.duplicateSerialGroups),
+      duplicateRowsFlagged: Number(data.duplicateRowsFlagged || 0),
+      firearmTypes: data.firearmTypes && typeof data.firearmTypes === "object" ? data.firearmTypes : {},
+      kinds: data.kinds && typeof data.kinds === "object" ? data.kinds : {},
+      firearmsStatus: data.firearmsStatus && typeof data.firearmsStatus === "object" ? data.firearmsStatus : {},
+      expiryStatus: data.expiryStatus && typeof data.expiryStatus === "object" ? data.expiryStatus : {},
+      barangays: data.barangays && typeof data.barangays === "object" ? data.barangays : {},
+      source: data.source || "Cleaned Consolacion Firearm Master List",
+      asOfDate: data.asOfDate || "2026-09-01",
+      privacy: data.privacy || "Aggregate totals only.",
     };
     renderOplanKatokSummary();
   } catch (error) {
-    status.textContent = `${error.message} Showing the last verified aggregate totals.`;
+    if (status) status.textContent = `${error.message} Showing the last verified aggregate totals.`;
   }
 }
 
