@@ -1,9 +1,50 @@
 {
-  "masterRecords": 357,
-  "individuals": 237,
-  "smallArms": 326,
-  "lightWeapons": 17,
-  "source": "Oplan Katok Data / Public Summary",
-  "syncedAt": "2026-08-19T00:44:47+08:00",
-  "privacy": "Aggregate totals only"
+  "masterRecords": 69,
+  "uniqueSerials": 68,
+  "individuals": 65,
+  "smallArms": 66,
+  "lightWeapons": 3,
+  "duplicateSerialGroups": 1,
+  "duplicateRowsFlagged": 2,
+  "firearmTypes": {
+    "SMALL ARM": 66,
+    "LIGHT WEAPON": 3
+  },
+  "kinds": {
+    "PISTOL": 55,
+    "REVOLVER": 6,
+    "SHOTGUN": 5,
+    "RIFLE": 3
+  },
+  "firearmsStatus": {
+    "RELEASED TO LICENSEE": 69
+  },
+  "expiryStatus": {
+    "EXPIRED": 66,
+    "UNKNOWN": 3
+  },
+  "barangays": {
+    "CASILI": 13,
+    "TAYUD": 8,
+    "NANGKA": 7,
+    "PULPOGAN": 6,
+    "CANSAGA": 5,
+    "LAMAC": 5,
+    "TUGBONGAN": 4,
+    "POBLACION ORIENTAL": 3,
+    "POBLACION OCCIDENTAL": 3,
+    "PITOGO": 2,
+    "SACSAC": 2,
+    "UNSPECIFIED": 2,
+    "JUGAN": 2,
+    "TOLOTOLO": 2,
+    "GARING": 1,
+    "DANGLAG": 1,
+    "POLOG": 1,
+    "CABANGAHAN": 1,
+    "PANOYPOY": 1
+  },
+  "source": "Cleaned Consolacion Firearm Master List",
+  "asOfDate": "2026-09-01",
+  "privacy": "Aggregate totals only. Owner names, serial numbers, birth dates, and exact addresses are not stored in this public repository."
 }
