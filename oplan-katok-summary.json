@@ -48,10 +48,11 @@
   "asOfDate": "2026-09-01",
   "privacy": "Aggregate totals only. Owner names, serial numbers, birth dates, exact addresses, action dates, and row-level action records are not stored in this public repository.",
   "monitoringStatus": {
-    "PENDING ACTION": 66,
+    "PENDING ACTION": 65,
     "RENEWED / CURRENT": 0,
     "RENEWED - UPDATE EXPIRY": 0,
-    "DEPOSITED": 0,
+    "DEPOSITED": 1,
     "UNKNOWN": 3
-  }
+  },
+  "syncedAt": "2026-09-01T10:58:00+08:00"
 }
