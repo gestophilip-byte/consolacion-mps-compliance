@@ -1,83 +1,58 @@
-# Hourly sync of oplan-katok-summary.json from the Apps Script endpoint.
-# When KATOK_ENDPOINT is not configured, the workflow exits cleanly and
-# preserves the last known public aggregate totals instead of failing.
+# Manual verification for the public Oplan Katok firearm aggregate file.
+# The previous hourly endpoint sync was retired on 1 September 2026 so it
+# cannot overwrite the cleaned Consolacion firearm summary with legacy totals.
 
-name: Update Oplan Katok summary
+name: Verify Oplan Katok firearm summary
 
 on:
-  schedule:
-    - cron: "0 * * * *"   # every hour, on the hour (UTC)
   workflow_dispatch:
-  push:
-    paths:
-      - ".github/workflows/update-oplan-katok.yml"
 
 permissions:
-  contents: write
-
-concurrency:
-  group: oplan-katok-sync
-  cancel-in-progress: false
+  contents: read
 
 jobs:
-  sync:
+  verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 3
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
 
-      - name: Fetch latest aggregates
-        id: fetch
-        env:
-          KATOK_ENDPOINT: ${{ secrets.KATOK_ENDPOINT }}
+      - name: Validate aggregate-only dataset
         run: |
           set -euo pipefail
 
-          if [ -z "${KATOK_ENDPOINT:-}" ]; then
-            echo "configured=false" >> "$GITHUB_OUTPUT"
-            echo "::warning title=Oplan Katok sync paused::KATOK_ENDPOINT is not configured. Keeping the existing oplan-katok-summary.json file."
-            {
-              echo "### Oplan Katok sync paused"
-              echo
-              echo "The repository secret \`KATOK_ENDPOINT\` is not configured, so the last saved aggregate totals were preserved."
-              echo "No protected Google Sheet data was exposed."
-            } >> "$GITHUB_STEP_SUMMARY"
-            exit 0
-          fi
-
-          echo "configured=true" >> "$GITHUB_OUTPUT"
-          curl -sSL --fail --retry 2 --retry-delay 2 --max-time 60 "$KATOK_ENDPOINT" -o katok-new.json
-
-          # Validate before touching the live file: all 4 required fields must be JSON numbers.
           jq -e '
             (.masterRecords | type == "number") and
-            (.individuals  | type == "number") and
-            (.smallArms    | type == "number") and
-            (.lightWeapons | type == "number")
-          ' katok-new.json > /dev/null
+            (.uniqueSerials | type == "number") and
+            (.individuals | type == "number") and
+            (.smallArms | type == "number") and
+            (.lightWeapons | type == "number") and
+            (.duplicateSerialGroups | type == "number") and
+            (.firearmTypes | type == "object") and
+            (.kinds | type == "object") and
+            (.firearmsStatus | type == "object") and
+            (.expiryStatus | type == "object") and
+            (.barangays | type == "object") and
+            (.privacy | type == "string")
+          ' oplan-katok-summary.json > /dev/null
 
-          jq . katok-new.json > oplan-katok-summary.json
-          rm -f katok-new.json
-
-      - name: Commit if totals changed
-        if: steps.fetch.outputs.configured == 'true'
-        run: |
-          set -euo pipefail
-          git config user.name  "katok-sync-bot"
-          git config user.email "actions@users.noreply.github.com"
-
-          # Ignore the syncedAt timestamp when deciding whether aggregate totals changed.
-          if git show HEAD:oplan-katok-summary.json 2>/dev/null | jq 'del(.syncedAt)' > old.json; then
-            jq 'del(.syncedAt)' oplan-katok-summary.json > new.json
-            if cmp -s old.json new.json; then
-              echo "No change in totals — skipping commit."
-              rm -f old.json new.json
-              exit 0
-            fi
-            rm -f old.json new.json
+          # Guardrail: personally identifiable owner fields must not be present
+          # in the public aggregate JSON.
+          if jq -e 'has("owners") or has("serialNumbers") or has("birthDates") or has("addresses")' oplan-katok-summary.json > /dev/null; then
+            echo "::error::Public Katok summary contains a prohibited owner-level field."
+            exit 1
           fi
 
-          git add oplan-katok-summary.json
-          git commit -m "chore: hourly Oplan Katok totals sync"
-          git push
+          echo "Oplan Katok aggregate file is valid."
+          jq '{
+            masterRecords,
+            uniqueSerials,
+            individuals,
+            smallArms,
+            lightWeapons,
+            duplicateSerialGroups,
+            kinds,
+            firearmsStatus,
+            expiryStatus
+          }' oplan-katok-summary.json >> "$GITHUB_STEP_SUMMARY"
