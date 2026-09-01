@@ -46,5 +46,12 @@
   },
   "source": "Cleaned Consolacion Firearm Master List",
   "asOfDate": "2026-09-01",
-  "privacy": "Aggregate totals only. Owner names, serial numbers, birth dates, and exact addresses are not stored in this public repository."
+  "privacy": "Aggregate totals only. Owner names, serial numbers, birth dates, and exact addresses are not stored in this public repository.",
+  "monitoringStatus": {
+    "PENDING ACTION": 66,
+    "RENEWED / CURRENT": 0,
+    "RENEWED - UPDATE EXPIRY": 0,
+    "DEPOSITED": 0,
+    "UNKNOWN": 3
+  }
 }
