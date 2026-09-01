@@ -29,3 +29,31 @@
 @media(max-width:760px){.sitrep-date-toolbar,.sitrep-shift-heading{align-items:flex-start;flex-direction:column}.sitrep-date-controls{width:100%;flex-wrap:wrap}.sitrep-date-controls label{width:100%}.sitrep-date-controls .button{flex:1}.sitrep-directive{grid-template-columns:1fr}.sitrep-shift-card{overflow:hidden}.sitrep-table-head{display:none}.sitrep-rows{min-width:0}.sitrep-row{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:10px}.sitrep-slot-number{grid-column:1}.sitrep-time-copy{grid-column:2/4}.sitrep-unit-button{grid-template-columns:1fr;gap:2px;min-height:48px}.sitrep-unit-button span{font-size:.58rem}.sitrep-unit-button strong{font-size:.49rem}.sitrep-shift-total{width:100%}.sitrep-page-heading{align-items:flex-start}}
 @media(max-width:480px){.sitrep-date-controls .button{flex:1 1 100%}.sitrep-unit-button{padding-left:3px;padding-right:3px}.sitrep-order-card{padding:14px}.sitrep-row{gap:5px}}
 
+
+
+/* OPLAN KATOK FIREARM MONITORING V2 */
+.records-section.katok-v2{display:block;padding:24px!important}
+.katok-intro{max-width:900px}
+.katok-source-note{display:inline-flex;align-items:center;gap:5px;margin-top:4px;padding:8px 10px;border:1px solid #dce8f8;border-radius:9px;background:#f7faff;color:var(--muted);font-size:.6rem}
+.katok-source-note strong{color:var(--navy)}
+.katok-primary-metrics{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:20px}
+.katok-breakdown-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+.katok-breakdown-card,.katok-barangay-card{padding:18px;border:1px solid var(--line);border-radius:12px;background:#fff;box-shadow:0 6px 18px rgba(15,35,65,.04)}
+.katok-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--line)}
+.katok-card-heading h3{margin:2px 0 0;color:var(--navy);font-size:.9rem}
+.katok-stat-list{display:grid;gap:7px;margin-top:11px}
+.katok-stat-list>div{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 11px;border:1px solid #e8edf4;border-radius:9px;background:#fafbfd}
+.katok-stat-list span{color:#42536d;font-size:.66rem;font-weight:700;text-transform:capitalize}
+.katok-stat-list strong{color:var(--navy);font-size:.92rem}
+.katok-card-note{margin:10px 0 0;color:var(--muted);font-size:.58rem}
+.katok-barangay-card{margin-top:16px}
+.katok-barangay-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+.katok-barangay-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #e8edf4;border-radius:9px;background:#fafbfd}
+.katok-barangay-item span{min-width:0;color:#42536d;font-size:.58rem;font-weight:700;overflow-wrap:anywhere}
+.katok-barangay-item strong{flex:0 0 auto;color:var(--navy);font-size:.78rem}
+.katok-barangay-item.is-unspecified{border-color:#f3d8a5;background:#fffaf0}
+.katok-barangay-item.is-unspecified span,.katok-barangay-item.is-unspecified strong{color:#8a5b00}
+.records-section.katok-v2 .katok-sync-status{grid-column:auto;margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);color:var(--muted);font-size:.58rem}
+@media(max-width:1100px){.katok-primary-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.katok-barangay-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:760px){.records-section.katok-v2{padding:18px!important}.katok-breakdown-grid{grid-template-columns:1fr}.katok-barangay-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.katok-primary-metrics,.katok-barangay-list{grid-template-columns:1fr}}
