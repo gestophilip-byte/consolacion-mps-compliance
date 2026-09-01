@@ -788,7 +788,7 @@ function renderOplanKatokSummary() {
         }).format(parsed);
       }
     }
-    status.textContent = `Verified from the cleaned Consolacion firearm master list as of ${verifiedDate}. ${summary.privacy || "Aggregate totals only."}`;
+    status.textContent = `Automatically checked hourly from the private Cleaned Master Google Sheet. Last verified data date: ${verifiedDate}. ${summary.privacy || "Aggregate totals only."}`;
   }
 }
 
