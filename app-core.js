@@ -196,6 +196,13 @@ const state = {
     kinds: { PISTOL: 55, REVOLVER: 6, SHOTGUN: 5, RIFLE: 3 },
     firearmsStatus: { "RELEASED TO LICENSEE": 69 },
     expiryStatus: { EXPIRED: 66, UNKNOWN: 3 },
+    monitoringStatus: {
+      "PENDING ACTION": 66,
+      "RENEWED / CURRENT": 0,
+      "RENEWED - UPDATE EXPIRY": 0,
+      DEPOSITED: 0,
+      UNKNOWN: 3,
+    },
     barangays: {
       CASILI: 13, TAYUD: 8, NANGKA: 7, PULPOGAN: 6, CANSAGA: 5, LAMAC: 5,
       TUGBONGAN: 4, "POBLACION ORIENTAL": 3, "POBLACION OCCIDENTAL": 3,
@@ -760,6 +767,7 @@ function renderOplanKatokSummary() {
   renderStats("#katok-firearm-types", summary.firearmTypes);
   renderStats("#katok-firearm-kinds", summary.kinds);
   renderStats("#katok-expiry-status", summary.expiryStatus);
+  renderStats("#katok-monitoring-status", summary.monitoringStatus);
   renderStats("#katok-firearms-status", summary.firearmsStatus);
 
   const barangayHost = document.querySelector("#katok-barangay-list");
@@ -818,6 +826,7 @@ async function loadOplanKatokSummary() {
       kinds: data.kinds && typeof data.kinds === "object" ? data.kinds : {},
       firearmsStatus: data.firearmsStatus && typeof data.firearmsStatus === "object" ? data.firearmsStatus : {},
       expiryStatus: data.expiryStatus && typeof data.expiryStatus === "object" ? data.expiryStatus : {},
+      monitoringStatus: data.monitoringStatus && typeof data.monitoringStatus === "object" ? data.monitoringStatus : {},
       barangays: data.barangays && typeof data.barangays === "object" ? data.barangays : {},
       source: data.source || "Cleaned Consolacion Firearm Master List",
       asOfDate: data.asOfDate || "2026-09-01",
