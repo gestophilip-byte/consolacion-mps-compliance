@@ -1,11 +1,11 @@
 {
   "source": "Citation Monitoring",
   "spreadsheetId": "121UYJVxFOki-djRQN4pq-9fNtEMMfvVi--eWBNClNx0",
-  "totalCitations": 4538,
-  "overallEstimatedFines": 2252600.0,
+  "totalCitations": 4566,
+  "overallEstimatedFines": 2266600.0,
   "currency": "PHP",
-  "sheetCount": 62,
-  "populatedSheetCount": 54,
-  "monitoringBlockCount": 139,
-  "calculatedAt": "2026-10-14T23:32:47.918742Z"
+  "sheetCount": 63,
+  "populatedSheetCount": 55,
+  "monitoringBlockCount": 141,
+  "calculatedAt": "2026-10-15T23:02:59.452891Z"
 }
